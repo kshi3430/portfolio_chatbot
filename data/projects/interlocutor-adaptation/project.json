@@ -1,7 +1,169 @@
 {
-  "id": "interlocutor-adaptation",
-  "title": "Interlocutor Adaptation Dialogue System",
-  "description": "Incrementally Revealed Persona 환경에서 대화 상대방의 변화에 동적으로 적응하는 대화 생성 프레임워크 연구 및 데이터셋 구축",
-  "tags": ["NLP", "Persona", "Dialogue System", "Dataset"],
-  "link": "https://github.com/example/interlocutor-adaptation"
+  "profile": {
+    "id": "profile-kim-seonghyeon-introduction",
+    "content": "김성현은 기술의 내부 원리를 이해하고 문제를 해결하여 사용자에게 가치 있는 서비스를 만드는 AI 엔지니어를 지향합니다. RAG, LangChain, Vector DB를 활용한 AI 서비스 엔지니어링과 PyTorch 기반 모델 개발 경험이 있습니다. 현재는 AI Agent와 LangGraph를 학습하며 AI가 스스로 판단하고 작업 흐름을 이어가는 구조를 공부하고 있습니다.",
+    "metadata": {
+      "document_type": "profile",
+      "section": "profile",
+      "subsection": "introduction",
+      "name": "김성현",
+      "job_title": "AI Engineer",
+      "keywords": [
+        "AI Engineer",
+        "RAG",
+        "LangChain",
+        "LangGraph",
+        "Vector DB",
+        "PyTorch",
+        "AI Agent"
+      ],
+      "updated_at": "2026-07-08"
+    }
+  },
+  "education_and_skills": [
+    {
+      "id": "profile-education",
+      "content": "김성현은 경북소프트웨어마이스터고등학교 인공지능과에 재학 중이며, 인공지능 동아리 AI고라에서 활동하고 있습니다.",
+      "metadata": {
+        "document_type": "education",
+        "section": "profile",
+        "topic": "school"
+      }
+    },
+    {
+      "id": "profile-tech-stack",
+      "content": "김성현의 주요 기술스택은 Python, LangChain, RAG, LangGraph, FastAPI, Git입니다. RAG와 Vector DB를 활용한 AI 서비스 개발, LangGraph 기반 워크플로 구성, FastAPI 기반 AI 백엔드 구현 경험이 있습니다.",
+      "metadata": {
+        "document_type": "skill",
+        "section": "profile",
+        "topic": "tech_stack",
+        "technologies": "Python, LangChain, RAG, LangGraph, FastAPI, Git"
+      }
+    }
+  ],
+  "awards": [
+    {
+      "id": "award-jichini-winter-project",
+      "content": "김성현은 동계 겨울방학 프로젝트에서 AI 기반 사회초년생 고민 연결 서비스 JICHINI를 개발하여 3위를 수상했습니다. 프로젝트에서 AI 및 AI 백엔드 개발을 담당했습니다.",
+      "metadata": {
+        "document_type": "award",
+        "section": "profile",
+        "topic": "project_award",
+        "award_name": "동계 겨울방학 프로젝트 3위",
+        "related_project": "JICHINI",
+        "award_level": "school",
+        "result": "3위"
+      }
+    },
+    {
+      "id": "award-data-create-camp",
+      "content": "김성현은 Data Create Camp(DCC)에 참가하여 데이터 및 인공지능 관련 프로젝트를 수행하고 장려상을 수상했습니다.",
+      "metadata": {
+        "document_type": "award",
+        "section": "profile",
+        "topic": "contest_award",
+        "award_name": "Data Create Camp 장려상",
+        "related_project": null,
+        "award_level": "contest",
+        "result": "장려상"
+      }
+    },
+    {
+      "id": "award-koai",
+      "content": "김성현은 한국인공지능올림피아드(KOAI)에 참가하여 인공지능 관련 문제 해결 역량을 인정받아 특별상을 수상했습니다.",
+      "metadata": {
+        "document_type": "award",
+        "section": "profile",
+        "topic": "contest_award",
+        "award_name": "한국인공지능올림피아드 특별상",
+        "related_project": null,
+        "award_level": "national",
+        "result": "특별상"
+      }
+    },
+    {
+      "id": "award-international-portfolio",
+      "content": "김성현은 국제교류 포트폴리오 대회에 참가하여 AI 엔지니어로서의 프로젝트 경험과 학습 과정을 포트폴리오로 구성해 은상을 수상했습니다.",
+      "metadata": {
+        "document_type": "award",
+        "section": "profile",
+        "topic": "portfolio_award",
+        "award_name": "국제교류 포트폴리오 대회 은상",
+        "related_project": null,
+        "award_level": "international",
+        "result": "은상"
+      }
+    },
+    {
+      "id": "award-ai-academic-excellence",
+      "content": "김성현은 인공지능 교과에서 우수한 학업 성취도를 기록하여 1학년 인공지능 교과우수상을 수상했습니다.",
+      "metadata": {
+        "document_type": "award",
+        "section": "profile",
+        "topic": "academic_award",
+        "award_name": "인공지능 교과우수상",
+        "related_project": null,
+        "award_level": "school",
+        "result": "교과우수상"
+      }
+    }
+  ],
+  "project_template": {
+    "project_id": "프로젝트를 구분하는 고유 ID",
+    "project_name": "프로젝트 이름",
+    "summary": "프로젝트를 한 문장으로 설명하는 요약",
+    "period": {
+      "start": "프로젝트 시작 날짜",
+      "end": "프로젝트 종료 날짜 또는 진행 중",
+      "status": "ongoing 또는 completed"
+    },
+    "role": [
+      "프로젝트에서 담당한 역할"
+    ],
+    "technologies": [
+      "프로젝트에 사용한 기술"
+    ],
+    "team_members": [
+      {
+        "name": "팀원 이름",
+        "role": "팀원이 담당한 역할"
+      }
+    ],
+    "motivation": {
+      "title": "개발 동기",
+      "content": "프로젝트를 시작하게 된 문제와 개발 목적"
+    },
+    "development": [
+      {
+        "id": "개발 내용 고유 ID",
+        "title": "구현한 기능 또는 개발 내용의 제목",
+        "content": "직접 구현한 기능과 구현 방법에 대한 설명",
+        "technologies": [
+          "해당 기능 구현에 사용한 기술"
+        ],
+        "code_reference": "관련 코드의 파일 경로 또는 GitHub 주소"
+      }
+    ],
+    "troubleshooting": [
+      {
+        "id": "트러블슈팅 고유 ID",
+        "title": "발생한 문제의 제목",
+        "problem": "개발 중 발생한 문제와 원인",
+        "solution": "문제를 해결하기 위해 적용한 방법",
+        "result": "문제 해결 후 달라진 점과 성과",
+        "technologies": [
+          "문제 해결에 사용한 기술"
+        ]
+      }
+    ],
+    "lessons": [
+      {
+        "id": "배운 점 고유 ID",
+        "title": "프로젝트에서 배운 내용의 제목",
+        "content": "프로젝트를 진행하며 배운 점과 이후 개선 방향"
+      }
+    ],
+    "repository_url": "프로젝트 GitHub 저장소 주소",
+    "source_url": "프로젝트 정보를 확인할 수 있는 포트폴리오 주소"
+  }
 }
