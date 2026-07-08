@@ -18,8 +18,7 @@
         "AI Agent"
       ],
       "updated_at": "2026-07-08"
-    },
-    "category": "profile"
+    }
   },
   {
     "id": "profile-education",
@@ -31,8 +30,7 @@
       "school": "경북소프트웨어마이스터고등학교",
       "department": "인공지능과",
       "period": "2025-03-01 ~ 2028-03-01"
-    },
-    "category": "education"
+    }
   },
   {
     "id": "profile-tech-stack",
@@ -42,8 +40,7 @@
       "section": "profile",
       "topic": "tech_stack",
       "technologies": "Python, LangChain, RAG, LangGraph, PyTorch, FastAPI, Git, Notion"
-    },
-    "category": "skill"
+    }
   },
   {
     "id": "award-school-project-siljikja",
@@ -56,8 +53,7 @@
       "related_project": "실직자",
       "award_level": "school",
       "result": "4위"
-    },
-    "category": "award"
+    }
   },
   {
     "id": "award-jichini-winter-project",
@@ -70,8 +66,7 @@
       "related_project": "JICHINI",
       "award_level": "school",
       "result": "3위"
-    },
-    "category": "award"
+    }
   },
   {
     "id": "award-capteam-capstone",
@@ -84,8 +79,7 @@
       "related_project": "Capteam",
       "award_level": "school",
       "result": "미정"
-    },
-    "category": "award"
+    }
   },
   {
     "id": "award-data-create-camp",
@@ -98,8 +92,7 @@
       "related_project": "",
       "award_level": "contest",
       "result": "장려상"
-    },
-    "category": "award"
+    }
   },
   {
     "id": "award-koai",
@@ -112,8 +105,7 @@
       "related_project": "",
       "award_level": "national",
       "result": "특별상"
-    },
-    "category": "award"
+    }
   },
   {
     "id": "award-international-portfolio",
@@ -126,8 +118,7 @@
       "related_project": "",
       "award_level": "international",
       "result": "은상"
-    },
-    "category": "award"
+    }
   },
   {
     "id": "award-ai-academic-excellence",
@@ -140,8 +131,7 @@
       "related_project": "",
       "award_level": "school",
       "result": "교과우수상"
-    },
-    "category": "award"
+    }
   },
   {
     "project_id": "jichini",
@@ -240,8 +230,7 @@
       }
     ],
     "repository_url": "",
-    "source_url": "https://east-flyingfish-9ab.notion.site/AI-engineer-9266299fe9ba821d99b001fff221f43b",
-    "category": "project"
+    "source_url": "https://east-flyingfish-9ab.notion.site/AI-engineer-9266299fe9ba821d99b001fff221f43b"
   },
   {
     "project_id": "capteam",
@@ -376,8 +365,7 @@
     ],
     "lessons": [],
     "repository_url": "",
-    "source_url": "https://east-flyingfish-9ab.notion.site/AI-engineer-9266299fe9ba821d99b001fff221f43b",
-    "category": "project"
+    "source_url": "https://east-flyingfish-9ab.notion.site/AI-engineer-9266299fe9ba821d99b001fff221f43b"
   },
   {
     "project_id": "def-api",
@@ -470,7 +458,6 @@
       }
     ],
     "repository_url": "",
-    "source_url": "https://east-flyingfish-9ab.notion.site/AI-engineer-9266299fe9ba821d99b001fff221f43b",
-    "category": "project"
+    "source_url": "https://east-flyingfish-9ab.notion.site/AI-engineer-9266299fe9ba821d99b001fff221f43b"
   }
 ]
