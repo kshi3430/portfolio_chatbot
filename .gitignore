@@ -41,3 +41,5 @@ README_tmp.html
 *.mp4
 *.mov
 *.avi
+.vercel
+.env*

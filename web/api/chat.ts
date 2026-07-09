@@ -1,6 +1,5 @@
 import OpenAI from "openai";
-import { readFile } from "fs/promises";
-import path from "path";
+import portfolioData from "../data/projects.json" with { type: "json" };
 
 export const config = {
   maxDuration: 30,
@@ -147,15 +146,14 @@ function buildDocuments(data: PortfolioData): RagDocument[] {
   return docs;
 }
 
-async function loadPortfolioData(): Promise<PortfolioData> {
-  const filePath = path.join(process.cwd(), "data", "projects.json");
-  return JSON.parse(await readFile(filePath, "utf8"));
+function loadPortfolioData(): PortfolioData {
+  return portfolioData as PortfolioData;
 }
 
 async function getEmbeddedDocuments(client: OpenAI): Promise<EmbeddedDocument[]> {
   if (cachedDocuments) return cachedDocuments;
 
-  const documents = buildDocuments(await loadPortfolioData());
+  const documents = buildDocuments(loadPortfolioData());
   const embeddings = await client.embeddings.create({
     model: EMBEDDING_MODEL,
     input: documents.map((doc) => doc.content),
@@ -194,6 +192,22 @@ async function retrieve(client: OpenAI, question: string) {
     .slice(0, 6);
 }
 
+function extractResponseText(response: any): string {
+  if (typeof response?.output_text === "string" && response.output_text.trim()) {
+    return response.output_text.trim();
+  }
+
+  const parts: string[] = [];
+  for (const item of response?.output || []) {
+    for (const content of item?.content || []) {
+      if (typeof content?.text === "string") parts.push(content.text);
+      if (typeof content?.output_text === "string") parts.push(content.output_text);
+    }
+  }
+
+  return parts.join("\n").trim();
+}
+
 function buildPrompt(question: string, docs: Array<EmbeddedDocument & { score: number }>) {
   const context = docs
     .map((doc, index) => `[${index + 1}] ${doc.title}\n${doc.content}`)
@@ -223,8 +237,10 @@ export default async function handler(req: any, res: any) {
       max_output_tokens: 1000,
     });
 
+    const text = extractResponseText(response);
+
     return res.status(200).json({
-      text: response.output_text?.trim() || "답변을 가져오는 도중 문제가 발생했습니다.",
+      text: text || "답변을 가져오는 도중 문제가 발생했습니다.",
       sources: docs.map((doc) => ({
         title: doc.title,
         content_preview: doc.content.slice(0, 160),
