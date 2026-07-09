@@ -7,6 +7,7 @@ FastAPI 챗봇 API 서버
 """
 
 import os
+from pathlib import Path
 from typing import Dict, Any
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
@@ -18,8 +19,9 @@ try:
 except ImportError:
     from rag_core import build_rag_engine
 
-# 환경변수 로드
-load_dotenv()
+# 실행 위치와 상관없이 프로젝트 루트의 .env를 로드합니다.
+ROOT_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(ROOT_DIR / ".env")
 
 # FastAPI 앱 생성
 app = FastAPI(
@@ -59,29 +61,25 @@ async def startup_event():
     global rag_engine
 
     # API 키 확인
-    gemini_api_key = os.getenv("GEMINI_API_KEY")
-    if not gemini_api_key:
-        raise RuntimeError("GEMINI_API_KEY가 설정되지 않았습니다.")
+    openai_api_key = os.getenv("OPENAI_API_KEY")
+    if not openai_api_key:
+        raise RuntimeError("OPENAI_API_KEY가 설정되지 않았습니다.")
 
     # projects.json 경로
-    projects_json = os.path.join(
-        os.path.dirname(__file__),
-        "..",
-        "data",
-        "projects.json"
-    )
+    projects_json = ROOT_DIR / "data" / "projects.json"
 
     print("🚀 RAG 엔진 초기화 중...")
 
     # RAG 엔진 빌드
     rag_engine = build_rag_engine(
-        projects_json_path=projects_json,
-        gemini_api_key=gemini_api_key,
+        projects_json_path=str(projects_json),
+        openai_api_key=openai_api_key,
         rebuild=False,  # 기존 DB 재사용
-        top_k=2,
+        top_k=5,
         chunk_size=1000,
         chunk_overlap=0,
-        persist_directory="./chroma_db"
+        persist_directory=str(ROOT_DIR / "chroma_db"),
+        openai_model=os.getenv("OPENAI_MODEL", "gpt-5-mini")
     )
 
     print("✅ RAG 엔진 준비 완료!")

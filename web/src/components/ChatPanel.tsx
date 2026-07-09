@@ -67,11 +67,12 @@ export function ChatPanel({ onClose }: { onClose?: () => void }) {
         }),
       });
 
+      const data = await res.json().catch(() => null);
+
       if (!res.ok) {
-        throw new Error("서버와의 통신에 실패했습니다. 다시 시도해 주세요.");
+        throw new Error(data?.error || "서버와의 통신에 실패했습니다. 다시 시도해 주세요.");
       }
 
-      const data = await res.json();
       if (data.error) {
         throw new Error(data.error);
       }
@@ -150,7 +151,7 @@ export function ChatPanel({ onClose }: { onClose?: () => void }) {
               </div>
 
               <div>
-                <div className={`rounded-2xl px-4 py-3 text-xs md:text-sm leading-relaxed ${isModel ? "bg-surface-base border border-white/5 text-on-surface" : "bg-primary-emerald text-void font-semibold"}`}>
+                <div className={`rounded-2xl px-4 py-3 text-xs md:text-sm leading-relaxed whitespace-pre-line ${isModel ? "bg-surface-base border border-white/5 text-on-surface" : "bg-primary-emerald text-void font-semibold"}`}>
                   {msg.text}
                 </div>
                 <div className={`text-[9px] font-mono text-on-surface-variant/50 mt-1 ${isModel ? "" : "text-right"}`}>

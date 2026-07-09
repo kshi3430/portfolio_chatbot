@@ -1,7 +1,6 @@
 import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
-import { GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
 import { mkdir, readFile, rename, writeFile } from "fs/promises";
 
@@ -76,82 +75,37 @@ async function startServer() {
   // API routes first
   app.post("/api/chat", async (req, res) => {
     try {
-      const { message, history } = req.body;
-      if (!message) {
+      const { message } = req.body;
+      if (typeof message !== "string" || !message.trim()) {
         return res.status(400).json({ error: "Message is required" });
       }
 
-      // Lazy initialization of GoogleGenAI
-      const apiKey = process.env.GEMINI_API_KEY;
-      if (!apiKey) {
-        return res.status(500).json({ error: "GEMINI_API_KEY is not configured" });
+      const ragApiUrl = process.env.RAG_API_URL || "http://127.0.0.1:8000";
+      const ragResponse = await fetch(`${ragApiUrl.replace(/\/$/, "")}/chat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          question: message,
+        }),
+      });
+
+      const data = await ragResponse.json().catch(() => null);
+      if (!ragResponse.ok) {
+        const detail = data?.detail || data?.error || "RAG API request failed";
+        return res.status(ragResponse.status).json({ error: detail });
       }
 
-      const ai = new GoogleGenAI({
-        apiKey,
-        httpOptions: {
-          headers: {
-            'User-Agent': 'aistudio-build',
-          }
-        }
+      res.json({
+        text: data?.answer || "답변을 가져오는 도중 문제가 발생했습니다.",
+        sources: data?.sources || [],
       });
-
-      const systemInstruction = `
-You are the portfolio AI assistant for Kim Seonghyeon, a student AI engineer in South Korea.
-Answer only from the verified portfolio facts below. Never invent employment, experience, metrics, awards, links, or skills.
-
-Profile:
-- Name: 김성현 (Kim Seonghyeon), AI Engineer.
-- Education: 경북소프트웨어마이스터고등학교 인공지능과, 2025.03–2028.03.
-- Direction: Understands the principles behind technology, solves real problems, and builds valuable AI services.
-- Focus: RAG, LangChain, Vector DB, PyTorch, Agent and LangGraph.
-- Contact: kshi3430@gmail.com, GitHub kshi3430.
-
-Projects:
-1. JICHINI: AI-based service connecting early-career workers with people who have similar concerns. Built prompt chains, Pinecone RAG retrieval, FastAPI endpoints, vector-data synchronization CRUD, and concern-score filtering. Winter project, 3rd place.
-2. CapTeam: AI-based automatic capstone team formation and management. Designed survey/output schemas, Pydantic structured output, and a LangGraph Reflection Loop with LLM correction, algorithm/LLM validation, iteration history and rule-based fallback. Parallel team-level generation reduced processing time from 514.67s to 179.44s (2.87x faster).
-3. Def API: Service that converts security vulnerability scan results into developer-friendly reports. Built a DeepSeek-Coder-1.3B-Instruct fine-tuning pipeline with Hugging Face PEFT, LoRA, and 8-bit quantization. Solved kernel crashes and memory issues by moving from Unsloth SFTTrainer to Transformers Trainer.
-
-Awards:
-- JICHINI winter project 3rd place; school project 4th place; Data Create Camp encouragement award; KOAI special award; international exchange portfolio silver award; first-year AI subject excellence award (1st in grade). CapTeam also received a project award, but the exact award name is not specified.
-
-Tech stack: Python, LangChain, RAG, LangGraph, FastAPI, PyTorch, Hugging Face, PEFT/LoRA, Pydantic, Pinecone/Vector DB, Git, Notion.
-
-Instructions:
-1. Always maintain a professional, calm, extremely polite, and technical tone (matching a highly skilled software architect).
-2. Answer in Korean (or English if the user asks in English). Keep replies concise and engaging, typically 2-3 sentences.
-3. Be helpful, and invite them to view the projects or email 김성현 directly.
-4. If information is not in the profile, say that it is not documented rather than guessing.
-5. Keep the conversation focused on 김성현's portfolio.
-`;
-
-      const formattedContents = [];
-      if (history && Array.isArray(history)) {
-        for (const msg of history) {
-          formattedContents.push({
-            role: msg.role === 'user' ? 'user' : 'model',
-            parts: [{ text: msg.text }]
-          });
-        }
-      }
-      formattedContents.push({
-        role: 'user',
-        parts: [{ text: message }]
-      });
-
-      const response = await ai.models.generateContent({
-        model: "gemini-3.5-flash",
-        contents: formattedContents,
-        config: {
-          systemInstruction,
-          temperature: 0.7,
-        }
-      });
-
-      res.json({ text: response.text });
     } catch (error: any) {
-      console.error("Gemini API Error:", error);
-      res.status(500).json({ error: error.message || "Something went wrong" });
+      console.error("RAG API Proxy Error:", error);
+      res.status(500).json({
+        error: `RAG API에 연결할 수 없습니다: ${error?.message || "unknown error"}`,
+      });
     }
   });
 

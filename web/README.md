@@ -1,20 +1,31 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# Kim Seonghyeon Portfolio Web
 
-# Run and deploy your AI Studio app
+Vite + React portfolio with a Vercel serverless RAG chatbot.
 
-This contains everything you need to run your app locally.
+## Local development
 
-View your app in AI Studio: https://ai.studio/apps/3cc56de4-e62e-4aee-9bee-2ef6fd282c39
+```bash
+npm install
+npm run dev
+```
 
-## Run Locally
+Local `npm run dev` still proxies `/api/chat` to the Python RAG server through `RAG_API_URL`.
+For local full-stack testing, run the backend from the repository root first:
 
-**Prerequisites:**  Node.js
+```bash
+python -m uvicorn server.api:app --host 127.0.0.1 --port 8000 --reload
+```
 
+## Vercel deploy
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+Set the Vercel project Root Directory to `web`.
+
+Add these environment variables in Vercel Project Settings:
+
+```bash
+OPENAI_API_KEY=your-openai-api-key
+OPENAI_MODEL=gpt-5-mini
+OPENAI_EMBEDDING_MODEL=text-embedding-3-small
+```
+
+Vercel uses `api/chat.ts` directly, so the deployed site does not need the Python FastAPI server or local Chroma DB.

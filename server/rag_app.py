@@ -39,12 +39,13 @@ def print_answer(result: dict):
 def main():
     """메인 실행 함수"""
     # 1. 환경 변수 로드
-    load_dotenv()
-    gemini_api_key = os.getenv("GEMINI_API_KEY")
+    root_dir = Path(__file__).resolve().parent.parent
+    load_dotenv(root_dir / ".env")
+    openai_api_key = os.getenv("OPENAI_API_KEY")
 
-    if not gemini_api_key:
-        print("❌ GEMINI_API_KEY가 설정되지 않았습니다.")
-        print("   .env 파일에 'GEMINI_API_KEY=your_key' 를 추가하세요.")
+    if not openai_api_key:
+        print("❌ OPENAI_API_KEY가 설정되지 않았습니다.")
+        print("   .env 파일에 'OPENAI_API_KEY=your_key' 를 추가하세요.")
         sys.exit(1)
 
     # 2. projects.json 경로 찾기
@@ -62,11 +63,12 @@ def main():
     # 학생들이 여기서 파라미터 튜닝 가능
     rag_engine = build_rag_engine(
         projects_json_path=str(projects_json),
-        gemini_api_key=gemini_api_key,
+        openai_api_key=openai_api_key,
         rebuild=False,  # True로 바꾸면 벡터 DB 재구축
-        top_k=2,  # 검색할 문서 개수 (학생 튜닝 포인트)
+        top_k=5,  # 검색할 문서 개수 (학생 튜닝 포인트)
         chunk_size=1000,  # 청크 크기 (학생 튜닝 포인트)
-        chunk_overlap=0  # 청크 겹침 (학생 튜닝 포인트)
+        chunk_overlap=0,  # 청크 겹침 (학생 튜닝 포인트)
+        openai_model=os.getenv("OPENAI_MODEL", "gpt-5-mini")
     )
 
     print_separator()

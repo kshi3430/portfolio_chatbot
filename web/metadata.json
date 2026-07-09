@@ -1,6 +1,6 @@
 {
   "name": "UI Engineer Portfolio",
-  "description": "Premium developer portfolio of a Senior UI Engineer with an interactive Gemini-powered AI twin assistant chatbot.",
+  "description": "Premium developer portfolio of a Senior UI Engineer with an interactive RAG-powered AI twin assistant chatbot.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_API"]
 }
