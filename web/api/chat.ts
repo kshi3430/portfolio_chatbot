@@ -234,7 +234,8 @@ export default async function handler(req: any, res: any) {
       model: CHAT_MODEL,
       instructions: SYSTEM_PROMPT,
       input: buildPrompt(message, docs),
-      max_output_tokens: 1000,
+      reasoning: { effort: "minimal" },
+      max_output_tokens: 3000,
     });
 
     const text = extractResponseText(response);
