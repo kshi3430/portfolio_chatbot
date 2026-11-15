@@ -15,7 +15,7 @@ export interface Project {
   team: string[];
   motivation: string;
   development: { title: string; details: string[] }[];
-  troubleshooting: { title: string; problem: string; solution: string }[];
+  troubleshooting: { title: string; problem: string; solution: string; result?: string }[];
   learnings?: string[];
   tags: string[];
   highlight: string;

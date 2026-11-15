@@ -11,17 +11,17 @@ const SKILL_GROUPS: (SkillGroup & { icon: any })[] = [
   },
   {
     category: "AI ENGINEERING",
-    skills: ["LangChain", "RAG", "LangGraph", "Prompt Engineering", "Structured Output"],
+    skills: ["LangChain", "RAG", "LangGraph", "LangSmith", "TypeSafe Jev", "Prompt Engineering", "Structured Output"],
     icon: BrainCircuit,
   },
   {
     category: "MODEL & BACKEND",
-    skills: ["PyTorch", "Hugging Face", "PEFT / LoRA", "FastAPI", "Pydantic"],
+    skills: ["PyTorch", "FastAPI", "Pydantic", "Docker", "PostgreSQL"],
     icon: Server,
   },
   {
     category: "DATA & TOOLS",
-    skills: ["Pinecone", "Vector DB", "Git", "Notion", "Quantization"],
+    skills: ["Pinecone", "Vector DB", "Git", "Notion"],
     icon: Wrench,
   },
 ];

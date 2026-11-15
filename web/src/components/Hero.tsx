@@ -35,9 +35,9 @@ export function Hero() {
               transition={{ duration: 0.7, delay: 0.1 }}
               className="font-display text-4xl md:text-6xl font-bold tracking-tight leading-[1.1] mb-6 text-on-surface"
             >
-              문제를 이해하고, <br />
+              모델의 판단과 코드 검증 사이, <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-emerald to-primary-glow">
-                작동하는 AI 서비스로 만듭니다.
+                맞는 AI 구조를 찾습니다.
               </span>
             </motion.h2>
 
@@ -47,10 +47,9 @@ export function Hero() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="text-on-surface-variant text-base md:text-lg max-w-2xl leading-relaxed mb-10"
             >
-              AI 엔지니어 김성현입니다. 기술의 내부 원리를 이해하고 문제를 해결해,
-              사용자에게 실제 가치가 닿는 서비스를 만드는 개발자를 지향합니다.
-              RAG, LangChain, Vector DB와 PyTorch 기반 모델 개발을 경험했고,
-              현재는 Agent와 LangGraph를 깊이 공부하고 있습니다.
+              한 줄로 소개할 수 있는 기능에도, 한 줄로 끝나지 않는 결정이 있습니다.
+              AI 기능을 만들 때는 모델에 어디까지 판단을 맡기고, 어느 지점에서 코드로 결과를 검증할지부터 고민합니다.
+              모델에 주는 정보와 검증 방식에 따라 응답의 정확도·일관성, 속도와 호출 비용이 어떻게 달라지는지 직접 확인하며 프로젝트에 맞는 구조를 찾아갑니다.
             </motion.p>
 
             {/* Quick Stats Grid */}

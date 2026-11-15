@@ -6,19 +6,49 @@ import { motion, AnimatePresence } from "motion/react";
 const SUGGESTIONS = [
   "김성현은 어떤 AI 기술을 다루나요?",
   "CapTeam의 성능 개선이 궁금해요.",
-  "JICHINI 프로젝트를 설명해줘.",
-  "Def API에서 어떤 문제를 해결했나요?",
+  "JICHINI는 어떻게 속도와 비용을 최적화했나요?",
+  "김성현의 수상 경력을 알려줘.",
 ];
 
+const CHAT_HISTORY_STORAGE_KEY = "portfolio-chat-history";
+
+const createWelcomeMessage = (): ChatMessage => ({
+  id: "welcome",
+  role: "model",
+  text: "안녕하세요! AI 엔지니어 김성현의 포트폴리오 어시스턴트입니다. 프로젝트, 기술 스택, 수상 경험과 개발 과정에 대해 편하게 물어보세요.",
+  timestamp: new Date(),
+});
+
+const loadStoredMessages = (): ChatMessage[] => {
+  if (typeof window === "undefined") return [createWelcomeMessage()];
+
+  try {
+    const stored = window.sessionStorage.getItem(CHAT_HISTORY_STORAGE_KEY);
+    if (!stored) return [createWelcomeMessage()];
+
+    const parsed = JSON.parse(stored);
+    if (!Array.isArray(parsed) || parsed.length === 0) return [createWelcomeMessage()];
+
+    const restoredMessages = parsed
+      .filter((message) =>
+        message &&
+        typeof message.id === "string" &&
+        (message.role === "user" || message.role === "model") &&
+        typeof message.text === "string"
+      )
+      .map((message) => ({
+        ...message,
+        timestamp: new Date(message.timestamp),
+      }));
+
+    return restoredMessages.length > 0 ? restoredMessages : [createWelcomeMessage()];
+  } catch {
+    return [createWelcomeMessage()];
+  }
+};
+
 export function ChatPanel({ onClose }: { onClose?: () => void }) {
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: "welcome",
-      role: "model",
-      text: "안녕하세요! AI 엔지니어 김성현의 포트폴리오 어시스턴트입니다. 프로젝트, 기술 스택, 수상 경험과 개발 과정에 대해 편하게 물어보세요.",
-      timestamp: new Date(),
-    },
-  ]);
+  const [messages, setMessages] = useState<ChatMessage[]>(loadStoredMessages);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -32,6 +62,13 @@ export function ChatPanel({ onClose }: { onClose?: () => void }) {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isLoading]);
+
+  useEffect(() => {
+    window.sessionStorage.setItem(
+      CHAT_HISTORY_STORAGE_KEY,
+      JSON.stringify(messages.slice(-50))
+    );
+  }, [messages]);
 
   const handleSendMessage = async (textToSend: string) => {
     if (!textToSend.trim() || isLoading) return;
@@ -49,12 +86,14 @@ export function ChatPanel({ onClose }: { onClose?: () => void }) {
     setIsLoading(true);
 
     try {
-      // Map history for the API (role: 'user' | 'model', text)
-      // Exclude the welcome message if you like, or pass it as 'model'
-      const historyPayload = messages.map((msg) => ({
-        role: msg.role,
-        text: msg.text,
-      }));
+      // 최근 대화만 전달해 후속 질문의 대상을 해석하면서 요청 크기를 제한합니다.
+      const historyPayload = messages
+        .filter((msg) => msg.id !== "welcome")
+        .slice(-10)
+        .map((msg) => ({
+          role: msg.role === "model" ? "assistant" : "user",
+          content: msg.text,
+        }));
 
       const res = await fetch("/api/chat", {
         method: "POST",

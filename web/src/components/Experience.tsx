@@ -3,13 +3,19 @@ import { Award, Calendar, CheckCircle2, GraduationCap } from "lucide-react";
 import { motion } from "motion/react";
 
 const AWARDS = [
-  ["캡스톤 프로젝트 CapTeam", "수상"],
-  ["동계 겨울방학 프로젝트 JICHINI", "3위"],
-  ["경북소마고 교내 프로젝트 실직자", "4위"],
-  ["Data Create Camp", "장려상"],
-  ["한국인공지능올림피아드 KOAI", "특별상"],
-  ["국제교류 포트폴리오 대회", "은상"],
-  ["인공지능 1학년 교과우수상", "내신 1위"],
+  ["2025 경북소마고 교내 프로젝트 실직자", "4위"],
+  ["2025 동계 겨울방학 프로젝트 JICHINI", "3위"],
+  ["2026 1학기 캡스톤 프로젝트 CapTeam", "1위"],
+  ["2026 경북 SWgo 해커톤 프로그램", "UX 맛집상"],
+  ["2025 DCC (Data Create Camp)", "장려상"],
+  ["2026 한국인공지능올림피아드 (KOAI)", "특별상"],
+  ["2026 국제교류 포트폴리오 대회", "은상"],
+  ["인공지능 1학년 교과우수상", "교과우수상"],
+  ["2026 직업계고 K-TECH 아이디어 챌린지", "입선"],
+  ["포스코DX 2026 AI Youth Challenge", "참가"],
+  ["2026 한국코드페어 해커톤", "참가"],
+  ["여수 SW연합 해커톤", "참가"],
+  ["의성군 서비스 개선 공모제안 경진대회", "참가"],
 ];
 
 export function Experience() {

@@ -1,448 +1,505 @@
 {
   "profile": {
     "id": "profile-kim-seonghyeon-introduction",
-    "content": "김성현은 기술의 내부 원리를 이해하고 문제를 해결하여 사용자에게 가치 있는 서비스를 만드는 AI 엔지니어를 지향합니다. RAG, LangChain, Vector DB를 활용한 AI 서비스 엔지니어링과 PyTorch 기반 모델 개발 경험이 있습니다. 현재는 AI Agent와 LangGraph를 학습하며 AI가 스스로 판단하고 작업 흐름을 이어가는 구조를 공부하고 있습니다.",
+    "content": "한 줄로 소개할 수 있는 기능에도, 한 줄로 끝나지 않는 결정이 있습니다. 김성현은 AI 기능을 만들 때 모델에 어디까지 판단을 맡기고, 어느 지점에서 코드로 결과를 검증할지부터 고민합니다. 모델에 주는 정보와 검증 방식에 따라 응답의 정확도·일관성, 속도와 호출 비용이 어떻게 달라지는지 직접 확인하며 프로젝트에 맞는 구조를 찾아가는 AI 엔지니어입니다.",
     "metadata": {
       "document_type": "profile",
       "section": "profile",
       "subsection": "introduction",
       "name": "김성현",
       "job_title": "AI Engineer",
+      "github": "https://github.com/kshi3430",
       "keywords": [
         "AI Engineer",
-        "RAG",
+        "Python",
         "LangChain",
+        "RAG",
         "LangGraph",
-        "Vector DB",
+        "LangSmith",
+        "TypeSafe Jev",
         "PyTorch",
+        "FastAPI",
+        "PostgreSQL",
+        "Docker",
         "AI Agent"
       ],
-      "updated_at": "2026-07-08"
+      "email": "kshi3430@gmail.com",
+      "phone": "010-4190-3430",
+      "birth_date": "2009-04-15"
     }
   },
   "education_and_skills": [
     {
       "id": "profile-education",
-      "content": "김성현은 경북소프트웨어마이스터고등학교 인공지능과에 재학 중이며, 인공지능 동아리 AI고라에서 활동하고 있습니다.",
+      "content": "김성현은 2025년 3월 1일부터 2028년 3월 1일까지 경북소프트웨어마이스터고등학교 인공지능과에 재학하며 인공지능 동아리 ai고라와 교내 환경 학생부에서 활동하고 있습니다.",
       "metadata": {
         "document_type": "education",
         "section": "profile",
-        "topic": "school"
+        "topic": "school",
+        "school": "경북소프트웨어마이스터고등학교",
+        "major": "인공지능과",
+        "period": "2025-03-01 ~ 2028-03-01"
       }
     },
     {
-      "id": "profile-tech-stack",
-      "content": "김성현의 주요 기술스택은 Python, LangChain, RAG, LangGraph, FastAPI, Git입니다. RAG와 Vector DB를 활용한 AI 서비스 개발, LangGraph 기반 워크플로 구성, FastAPI 기반 AI 백엔드 구현 경험이 있습니다.",
+      "id": "profile-contact",
+      "content": "김성현의 이메일은 kshi3430@gmail.com이고 전화번호는 010-4190-3430입니다. 생년월일은 2009년 4월 15일이며 GitHub 계정은 kshi3430, 주소는 https://github.com/kshi3430 입니다.",
+      "metadata": {
+        "document_type": "contact",
+        "section": "profile",
+        "topic": "contact_and_personal_information",
+        "name": "김성현",
+        "email": "kshi3430@gmail.com",
+        "phone": "010-4190-3430",
+        "birth_date": "2009-04-15",
+        "github": "https://github.com/kshi3430"
+      }
+    },
+    {
+      "id": "profile-ai-stack",
+      "content": "김성현의 주요 기술 스택(Primary Stack)은 Python, LangChain, RAG, LangGraph, LangSmith입니다. 프로젝트에서는 TypeSafe Jev, Prompt Engineering, Vector DB, Pinecone, Pydantic structured output도 활용했습니다.",
       "metadata": {
         "document_type": "skill",
         "section": "profile",
-        "topic": "tech_stack",
-        "technologies": "Python, LangChain, RAG, LangGraph, FastAPI, Git"
+        "topic": "ai_stack",
+        "technologies": "Python, LangChain, RAG, LangGraph, LangSmith, TypeSafe Jev, Prompt Engineering, Vector DB, Pinecone, Pydantic"
+      }
+    },
+    {
+      "id": "profile-language-tools",
+      "content": "김성현의 서브 기술 스택(Also Stack)은 PyTorch, FastAPI, Docker, PostgreSQL입니다. Python과 FastAPI를 기반으로 AI 백엔드를 구축하고 Spring Boot와 연동한 경험이 있으며, Git과 Notion으로 코드 및 프로젝트 기록을 관리합니다.",
+      "metadata": {
+        "document_type": "skill",
+        "section": "profile",
+        "topic": "language_backend_tools",
+        "technologies": "PyTorch, FastAPI, Docker, PostgreSQL, Spring Boot, Git, Notion"
+      }
+    },
+    {
+      "id": "profile-study-archive",
+      "content": "김성현은 지금까지 공부하며 정리한 내용을 Notion 학습 기록에 모아두고 있으며 앞으로도 꾸준히 배우고 기록할 계획입니다. 학습 기록 주소는 https://east-flyingfish-9ab.notion.site/study-2df6299fe9ba803f8491d44348fa7a10?pvs=25 입니다.",
+      "metadata": {
+        "document_type": "learning_archive",
+        "section": "profile",
+        "topic": "study",
+        "source_url": "https://east-flyingfish-9ab.notion.site/study-2df6299fe9ba803f8491d44348fa7a10?pvs=25"
       }
     }
   ],
   "awards": [
     {
-      "id": "award-jichini-winter-project",
-      "content": "김성현은 동계 겨울방학 프로젝트에서 AI 기반 사회초년생 고민 연결 서비스 JICHINI를 개발하여 3위를 수상했습니다. 프로젝트에서 AI 및 AI 백엔드 개발을 담당했습니다.",
+      "id": "award-school-unemployed",
+      "content": "김성현은 2025 경북소프트웨어마이스터고 교내 프로젝트에서 실직자 프로젝트로 4위를 수상했습니다.",
       "metadata": {
         "document_type": "award",
         "section": "profile",
-        "topic": "project_award",
-        "award_name": "동계 겨울방학 프로젝트 3위",
+        "topic": "award",
+        "award_name": "2025 경북소마고 교내 프로젝트 실직자 4위",
+        "related_project": "실직자",
+        "result": "4위"
+      }
+    },
+    {
+      "id": "award-jichini-winter-project",
+      "content": "김성현은 2025 동계 겨울방학 프로젝트에서 AI 기반 사회초년생 고민 연결 서비스 JICHINI를 개발해 3위를 수상했으며 AI와 AI Backend를 담당했습니다.",
+      "metadata": {
+        "document_type": "award",
+        "section": "profile",
+        "topic": "award",
+        "award_name": "2025 동계 겨울방학 프로젝트 JICHINI 3위",
         "related_project": "JICHINI",
-        "award_level": "school",
         "result": "3위"
       }
     },
     {
-      "id": "award-data-create-camp",
-      "content": "김성현은 Data Create Camp(DCC)에 참가하여 데이터 및 인공지능 관련 프로젝트를 수행하고 장려상을 수상했습니다.",
+      "id": "award-capteam",
+      "content": "김성현은 2026년 1학기 캡스톤 프로젝트에서 AI 기반 팀 자동 생성 및 캡스톤 관리 서비스 CapTeam으로 1위를 수상했습니다.",
       "metadata": {
         "document_type": "award",
         "section": "profile",
-        "topic": "contest_award",
-        "award_name": "Data Create Camp 장려상",
+        "topic": "award",
+        "award_name": "2026 1학기 캡스톤 프로젝트 CapTeam 1위",
+        "related_project": "CapTeam",
+        "result": "1위"
+      }
+    },
+    {
+      "id": "award-swgo-hackathon",
+      "content": "김성현은 2026 경북 SWgo 해커톤 프로그램에서 UX 맛집상을 수상했습니다.",
+      "metadata": {
+        "document_type": "award",
+        "section": "profile",
+        "topic": "award",
+        "award_name": "2026 경북 SWgo 해커톤 UX 맛집상",
         "related_project": null,
-        "award_level": "contest",
+        "result": "UX 맛집상"
+      }
+    },
+    {
+      "id": "award-data-create-camp",
+      "content": "김성현은 2025 DCC(Data Create Camp)에서 장려상을 수상했습니다.",
+      "metadata": {
+        "document_type": "award",
+        "section": "profile",
+        "topic": "award",
+        "award_name": "2025 DCC (Data Create Camp) 장려상",
+        "related_project": null,
         "result": "장려상"
       }
     },
     {
       "id": "award-koai",
-      "content": "김성현은 한국인공지능올림피아드(KOAI)에 참가하여 인공지능 관련 문제 해결 역량을 인정받아 특별상을 수상했습니다.",
+      "content": "김성현은 2026 한국인공지능올림피아드(KOAI)에서 특별상을 수상했습니다.",
       "metadata": {
         "document_type": "award",
         "section": "profile",
-        "topic": "contest_award",
-        "award_name": "한국인공지능올림피아드 특별상",
+        "topic": "award",
+        "award_name": "2026 한국인공지능올림피아드(KOAI) 특별상",
         "related_project": null,
-        "award_level": "national",
         "result": "특별상"
       }
     },
     {
       "id": "award-international-portfolio",
-      "content": "김성현은 국제교류 포트폴리오 대회에 참가하여 AI 엔지니어로서의 프로젝트 경험과 학습 과정을 포트폴리오로 구성해 은상을 수상했습니다.",
+      "content": "김성현은 2026 국제교류 포트폴리오 대회에서 은상을 수상했습니다.",
       "metadata": {
         "document_type": "award",
         "section": "profile",
-        "topic": "portfolio_award",
-        "award_name": "국제교류 포트폴리오 대회 은상",
+        "topic": "award",
+        "award_name": "2026 국제교류 포트폴리오 대회 은상",
         "related_project": null,
-        "award_level": "international",
         "result": "은상"
       }
     },
     {
       "id": "award-ai-academic-excellence",
-      "content": "김성현은 인공지능 교과에서 우수한 학업 성취도를 기록하여 1학년 인공지능 교과우수상을 수상했습니다.",
+      "content": "김성현은 인공지능 1학년 교과우수상을 수상했습니다.",
       "metadata": {
         "document_type": "award",
         "section": "profile",
-        "topic": "academic_award",
-        "award_name": "인공지능 교과우수상",
+        "topic": "award",
+        "award_name": "인공지능 1학년 교과우수상",
         "related_project": null,
-        "award_level": "school",
         "result": "교과우수상"
+      }
+    },
+    {
+      "id": "award-k-tech",
+      "content": "김성현은 2026 직업계고 K-TECH 아이디어 챌린지 대회에서 입선했습니다.",
+      "metadata": {
+        "document_type": "award",
+        "section": "profile",
+        "topic": "award",
+        "award_name": "2026 직업계고 K-TECH 아이디어 챌린지 입선",
+        "related_project": null,
+        "result": "입선"
+      }
+    },
+    {
+      "id": "activity-posco-ai-youth",
+      "content": "김성현은 포스코DX 2026 AI Youth Challenge에 참가했습니다.",
+      "metadata": {
+        "document_type": "activity",
+        "section": "profile",
+        "topic": "contest_activity",
+        "award_name": "포스코DX 2026 AI Youth Challenge 참가",
+        "related_project": null,
+        "result": "참가"
+      }
+    },
+    {
+      "id": "activity-korea-code-fair",
+      "content": "김성현은 2026 한국코드페어 해커톤에 참가했습니다.",
+      "metadata": {
+        "document_type": "activity",
+        "section": "profile",
+        "topic": "contest_activity",
+        "award_name": "2026 한국코드페어 해커톤 참가",
+        "related_project": null,
+        "result": "참가"
+      }
+    },
+    {
+      "id": "activity-yeosu-sw-hackathon",
+      "content": "김성현은 여수 SW연합 해커톤에 참가했습니다.",
+      "metadata": {
+        "document_type": "activity",
+        "section": "profile",
+        "topic": "contest_activity",
+        "award_name": "여수 SW연합 해커톤 참가",
+        "related_project": null,
+        "result": "참가"
+      }
+    },
+    {
+      "id": "activity-uiseong-service-contest",
+      "content": "김성현은 의성군 서비스 개선 공모제안 경진대회에 참가했습니다.",
+      "metadata": {
+        "document_type": "activity",
+        "section": "profile",
+        "topic": "contest_activity",
+        "award_name": "의성군 서비스 개선 공모제안 경진대회 참가",
+        "related_project": null,
+        "result": "참가"
       }
     }
   ],
   "projects": [
-  {
-    "category": "project",
-    "project_id": "project-jichini",
-    "project_name": "JICHINI",
-    "summary": "AI 기반 사회초년생 고민 유사도 기반 연결 서비스",
-    "period": {
-      "start": "2025",
-      "end": "2025",
-      "status": "completed"
+    {
+      "category": "project",
+      "project_id": "project-jichini",
+      "project_name": "JICHINI",
+      "summary": "AI 기반 사회초년생 고민 유사도 기반 연결 서비스",
+      "period": {
+        "start": "2025",
+        "end": "2025",
+        "status": "completed"
+      },
+      "role": [
+        "AI 개발",
+        "AI Backend 개발",
+        "LangGraph 워크플로 설계",
+        "RAG · Vector DB 연동"
+      ],
+      "technologies": [
+        "Python",
+        "LangChain",
+        "LangGraph",
+        "TypeSafe Jev",
+        "FastAPI",
+        "RAG",
+        "Pinecone",
+        "Vector DB",
+        "Spring Boot"
+      ],
+      "team_members": [
+        {
+          "name": "김성현",
+          "role": "AI / AI_Backend"
+        },
+        {
+          "name": "박진욱",
+          "role": "Backend / 배포"
+        },
+        {
+          "name": "허재원",
+          "role": "Frontend"
+        }
+      ],
+      "motivation": {
+        "title": "개발 동기",
+        "content": "타지역으로 취업한 사회초년생들이 낯선 환경 속에서 직장생활, 인간관계, 외로움 같은 고민을 겪지만 이를 편하게 공유할 곳이 부족하다는 문제에서 출발했습니다. AI가 고민을 분석하고 비슷한 경험을 가진 사람들을 연결해 공감과 위로를 제공하는 서비스 Jichini를 개발했습니다."
+      },
+      "development": [
+        {
+          "id": "jichini-development-jev-langgraph",
+          "title": "Jev 기반 입력 판단 및 LangGraph 응답 분기",
+          "content": "TypeSafe Jev를 연동해 현재 입력과 이전 고민을 바탕으로 사용자 의도와 매칭 가능성을 한 번의 요청으로 판단하도록 구현했습니다. LangGraph에서 판단 결과에 따라 유사 사용자 검색, 고민을 구체화하는 추가 질문, 기존 추천 결과 더보기로 분기하고, 고민 정보가 부족하면 상황이나 감정을 자연스럽게 물어보는 안내 답변 프롬프트를 설계했습니다.",
+          "technologies": [
+            "TypeSafe Jev",
+            "LangGraph",
+            "LangChain",
+            "Python"
+          ],
+          "code_reference": ""
+        },
+        {
+          "id": "jichini-development-rag-vector-db",
+          "title": "Pinecone 기반 유사 사용자 매칭",
+          "content": "데이터 청킹을 사용자 1명당 1문서로 저장해 정보 손실 없이 데이터를 보관했고, 실시간 사용자 데이터 수정·삭제·생성이 필요한 서비스 특성을 고려해 Pinecone Vector DB를 사용했습니다. 사용자가 고민을 말하면 Retriever가 유사한 고민을 가진 사용자를 매칭 및 도출하는 시스템을 구현했습니다.",
+          "technologies": [
+            "RAG",
+            "Pinecone",
+            "Vector DB",
+            "LangChain"
+          ],
+          "code_reference": ""
+        },
+        {
+          "id": "jichini-development-backend-api",
+          "title": "Spring Boot 연동 AI 백엔드 API 구현",
+          "content": "Spring Boot와 AI 채팅을 연결하는 API를 구현해 새 메시지가 인입되면 이전 고민을 불러와 맥락을 유지하고 추가 질문 또는 유사 사용자 추천 결과를 반환하도록 구성했습니다. 또한 회원가입·정보 수정·탈퇴에 맞춰 Pinecone의 사용자 벡터를 등록·갱신·삭제하는 API를 구현했습니다.",
+          "technologies": [
+            "FastAPI",
+            "Spring Boot",
+            "Python",
+            "Pinecone"
+          ],
+          "code_reference": ""
+        }
+      ],
+      "troubleshooting": [
+        {
+          "id": "jichini-troubleshooting-optimization",
+          "title": "모호한 고민 구체화와 판단 호출 줄이기",
+          "problem": "사용자가 '요즘 그냥 좀 힘들어'처럼 입력하면 LLM은 이를 고민으로 분류했지만 상황 정보가 부족해 유사 사용자 매칭을 하기 어려웠습니다. 1차로 고민 구체성 점수 도입을 통해 기준 미달 시 구체화 유도 질문을 반환했으나, 분류 후 구체성 평가를 별도로 수행하면서 매칭 판단까지 순차 호출이 발생해 비용과 응답 지연이 늘어나는 한계가 있었습니다.",
+          "solution": "TypeSafe Jev와 LangGraph로 구조를 재구성해 현재 입력과 이전 고민을 바탕으로 입력 의도와 매칭 가능성을 1회 요청으로 통합 판단하도록 개선했습니다. 정보가 충분하면 Pinecone 검색으로, 부족하면 추가 질문으로, '더 보여줘' 요청 시에는 세션 캐시 기반 추가 목록 반환으로 분기했습니다.",
+          "result": "별도 수행하던 두 판단을 Jev 단일 호출로 통합해 전체 응답 시간 p95가 3,212ms에서 1,784ms로 44.4% 감소했고, Solar Pro 4·Upstage 임베딩·Jev 토큰 및 Pinecone read 사용량 70턴 실측 기준 1,000턴 예상 API 비용이 28.9% 절감되었습니다.",
+          "technologies": [
+            "TypeSafe Jev",
+            "LangGraph",
+            "LangChain",
+            "Pinecone",
+            "Python"
+          ]
+        }
+      ],
+      "lessons": [
+        {
+          "id": "jichini-lesson-requirements",
+          "title": "기획 단계에서 기능 정의의 중요성",
+          "content": "초기 요구사항과 기능 정의가 구체적이지 않으면 개발 중 설계 변경과 재구현이 반복될 수 있다는 점을 배웠습니다. 개발 전에 팀원들과 기능의 목적, 입력 데이터, 결과 형태를 명확히 공유하는 과정이 중요하다는 것을 느꼈습니다."
+        }
+      ],
+      "repository_url": "",
+      "source_url": "https://east-flyingfish-9ab.notion.site/AI-engineer-9266299fe9ba821d99b001fff221f43b"
     },
-    "role": [
-      "AI 개발",
-      "AI Backend 개발",
-      "RAG 설계",
-      "Vector DB 연동"
-    ],
-    "technologies": [
-      "Python",
-      "LangChain",
-      "FastAPI",
-      "RAG",
-      "Pinecone",
-      "Vector DB"
-    ],
-    "team_members": [
-      {
-        "name": "김성현",
-        "role": "AI / AI_Backend"
+    {
+      "category": "project",
+      "project_id": "project-capteam",
+      "project_name": "CapTeam",
+      "summary": "AI 기반 팀 자동 생성 및 캡스톤 전체 관리 서비스",
+      "period": {
+        "start": "2026-03-15",
+        "end": "",
+        "status": "ongoing"
       },
-      {
-        "name": "박진욱",
-        "role": "Backend / 배포"
+      "role": [
+        "AI 개발",
+        "AI Backend 개발",
+        "LangGraph 워크플로 설계",
+        "팀 매칭 알고리즘 설계"
+      ],
+      "technologies": [
+        "Python",
+        "LangChain",
+        "LangGraph",
+        "FastAPI",
+        "Pydantic"
+      ],
+      "team_members": [
+        {
+          "name": "김성현",
+          "role": "AI / AI_Backend"
+        },
+        {
+          "name": "박진욱",
+          "role": "Backend / 배포"
+        },
+        {
+          "name": "허재원",
+          "role": "Frontend"
+        },
+        {
+          "name": "양원우",
+          "role": "Backend"
+        },
+        {
+          "name": "유채민",
+          "role": "AI"
+        }
+      ],
+      "motivation": {
+        "title": "개발 동기",
+        "content": "캡스톤 프로젝트에서 학생들은 팀원을 찾기 어렵고, 선생님은 팀 구성과 진행 상황 관리에 많은 시간이 든다는 문제를 해결하고자 했습니다. 학생 설문 데이터를 기반으로 AI가 팀을 자동 생성하고, 캡스톤 진행 관리까지 하나의 서비스에서 처리할 수 있도록 개발했습니다."
       },
-      {
-        "name": "허재원",
-        "role": "Frontend"
-      }
-    ],
-    "motivation": {
-      "title": "개발 동기",
-      "content": "타지역으로 취업한 사회초년생들이 낯선 환경, 직장생활, 인간관계, 외로움 같은 고민을 쉽게 공유하지 못한다는 문제에서 출발했습니다. 사용자의 고민을 AI가 분석하고, 비슷한 고민이나 경험을 가진 사람들을 연결해 공감과 위로를 받을 수 있는 서비스를 만들고자 했습니다."
-    },
-    "development": [
-      {
-        "id": "jichini-development-prompt-engineering",
-        "title": "고민 구체화를 위한 프롬프트 엔지니어링",
-        "content": "사용자가 고민을 모호하게 입력했을 때 챗봇이 자연스럽게 추가 질문을 하며 고민을 구체화하도록 프롬프트를 설계했습니다. 이를 통해 단순한 감정 표현이 아닌 실제 매칭에 활용 가능한 고민 정보를 얻을 수 있도록 구현했습니다.",
-        "technologies": [
-          "LangChain",
-          "Prompt Engineering",
-          "Python"
-        ],
-        "code_reference": ""
-      },
-      {
-        "id": "jichini-development-rag-vector-db",
-        "title": "RAG와 Vector DB 기반 유사 고민 사용자 검색",
-        "content": "사용자별 고민 데이터를 문서 단위로 구성하고 임베딩하여 Pinecone Vector DB에 저장했습니다. 이후 사용자가 고민을 입력하면 Retriever를 통해 유사한 고민을 가진 사용자를 검색하고 연결할 수 있도록 구현했습니다.",
-        "technologies": [
-          "RAG",
-          "Pinecone",
-          "Vector DB",
-          "LangChain"
-        ],
-        "code_reference": ""
-      },
-      {
-        "id": "jichini-development-backend-api",
-        "title": "AI 백엔드 API 구현",
-        "content": "마이페이지 입력 정보와 세션 정보를 기반으로 채팅 API를 구성했습니다. 스트리밍 방식의 AI 응답을 서비스 구조에 맞게 동기 API 형태로 변환하고, 회원 정보 변경이나 탈퇴 시 임베딩 데이터와 Vector DB 데이터가 함께 갱신되도록 구현했습니다.",
-        "technologies": [
-          "FastAPI",
-          "Python",
-          "LangChain",
-          "Pinecone"
-        ],
-        "code_reference": ""
-      }
-    ],
-    "troubleshooting": [
-      {
-        "id": "jichini-troubleshooting-ambiguous-input",
-        "title": "모호한 고민 입력 판단 문제",
-        "problem": "사용자가 '요즘 그냥 좀 힘들어'처럼 모호한 문장을 입력했을 때도 시스템이 이를 구체적인 고민으로 판단하여 유사 사용자 추천 정확도가 떨어지는 문제가 있었습니다.",
-        "solution": "고민의 구체성을 판단하는 scoring 함수를 추가하고, 기준 점수보다 낮은 입력은 모호한 고민으로 처리했습니다. 이 경우 바로 추천을 수행하지 않고 챗봇이 자연스럽게 추가 질문을 하도록 개선했습니다.",
-        "result": "사용자의 고민 정보가 더 구체화된 뒤 Vector DB 검색에 사용되면서 추천 품질과 사용자 매칭 정확도가 개선되었습니다.",
-        "technologies": [
-          "Python",
-          "Prompt Engineering",
-          "LangChain"
-        ]
-      }
-    ],
-    "lessons": [
-      {
-        "id": "jichini-lesson-requirements",
-        "title": "기획 단계에서 기능 정의의 중요성",
-        "content": "초기 요구사항과 기능 정의가 구체적이지 않으면 개발 중 설계 변경과 재구현이 반복될 수 있다는 점을 배웠습니다. 개발 전에 팀원들과 기능의 목적, 입력 데이터, 결과 형태를 명확히 공유하는 과정이 중요하다는 것을 느꼈습니다."
-      }
-    ],
-    "repository_url": "",
-    "source_url": "https://east-flyingfish-9ab.notion.site/AI-engineer-9266299fe9ba821d99b001fff221f43b"
-  },
-  {
-    "category": "project",
-    "project_id": "project-capteam",
-    "project_name": "Capteam",
-    "summary": "AI 기반 캡스톤 팀 자동 생성 및 프로젝트 관리 서비스",
-    "period": {
-      "start": "2026-03-15",
-      "end": "",
-      "status": "ongoing"
-    },
-    "role": [
-      "AI 개발",
-      "AI Backend 개발",
-      "LangGraph 워크플로 설계",
-      "팀 매칭 알고리즘 설계"
-    ],
-    "technologies": [
-      "Python",
-      "LangChain",
-      "LangGraph",
-      "FastAPI",
-      "Pydantic"
-    ],
-    "team_members": [
-      {
-        "name": "김성현",
-        "role": "AI / AI_Backend"
-      },
-      {
-        "name": "박진욱",
-        "role": "Backend / 배포"
-      },
-      {
-        "name": "허재원",
-        "role": "Frontend"
-      },
-      {
-        "name": "양원우",
-        "role": "Backend"
-      },
-      {
-        "name": "유채민",
-        "role": "AI"
-      }
-    ],
-    "motivation": {
-      "title": "개발 동기",
-      "content": "캡스톤 프로젝트에서 학생들은 팀원을 찾기 어렵고, 선생님은 팀 구성과 진행 상황 관리에 많은 시간이 든다는 문제를 해결하고자 했습니다. 학생 설문 데이터를 기반으로 AI가 팀을 자동 생성하고, 캡스톤 진행 관리까지 하나의 서비스에서 처리할 수 있도록 개발했습니다."
-    },
-    "development": [
-      {
-        "id": "capteam-development-dataset",
-        "title": "팀 매칭을 위한 설문 데이터 구조 설계",
-        "content": "희망 역할, 기술 스택, 구현 가능한 기능, 선호 팀원, 리더 선호 여부, 성격과 개발 스타일 등을 수집하는 설문 구조를 설계했습니다. 이 데이터를 AI가 학생을 분석하고 팀 매칭을 수행할 수 있는 입력 데이터로 활용했습니다.",
-        "technologies": [
-          "Python",
-          "Data Modeling"
-        ],
-        "code_reference": ""
-      },
-      {
-        "id": "capteam-development-structured-output",
-        "title": "Pydantic 기반 구조화된 AI 응답 처리",
-        "content": "학생 분석 결과와 팀 매칭 결과가 일정한 형식으로 반환되도록 Pydantic 기반 structured output을 적용했습니다. 학생 경험에서 키워드를 추출하고 이를 LLM 프롬프트에 전달하여 분석 결과의 일관성을 높였습니다.",
-        "technologies": [
-          "Pydantic",
-          "LangChain",
-          "Python"
-        ],
-        "code_reference": ""
-      },
-      {
-        "id": "capteam-development-langgraph-workflow",
-        "title": "LangGraph 기반 팀 매칭 워크플로 구현",
-        "content": "팀 생성, LLM 수정, 알고리즘 검증, LLM 검증, 최종 저장으로 이어지는 팀 매칭 워크플로를 LangGraph로 구성했습니다. 팀 구성 결과를 반복적으로 검토하고 보정하는 구조를 설계했습니다.",
-        "technologies": [
-          "LangGraph",
-          "LangChain",
-          "Python"
-        ],
-        "code_reference": ""
-      },
-      {
-        "id": "capteam-development-backend",
-        "title": "FastAPI 기반 AI 결과 API 구현",
-        "content": "학생 분석 결과와 팀 매칭 결과를 JSON 형태로 저장하고, 관리자 화면에서 사용할 수 있도록 API 응답 구조를 변환했습니다. 학생별 강점, 역할, 기술 수준, 기술 스택 점수 등을 제공하여 팀 구성 근거를 확인할 수 있도록 구현했습니다.",
-        "technologies": [
-          "FastAPI",
-          "Python",
-          "JSON"
-        ],
-        "code_reference": ""
-      }
-    ],
-    "troubleshooting": [
-      {
-        "id": "capteam-troubleshooting-randomness",
-        "title": "학생 분석 결과의 랜덤성과 과대평가 문제",
-        "problem": "LLM이 학생의 기술 수준을 일관성 없이 평가하거나, 근거가 부족한 기술도 높게 평가하는 문제가 있었습니다.",
-        "solution": "temperature를 0으로 설정하고 후처리 보정 로직을 추가했습니다. 특정 키워드가 부족한 경우 낮은 점수를 부여하고, 근거 키워드가 있을 때만 평균 이상의 점수를 줄 수 있도록 제한했습니다.",
-        "result": "학생 분석 결과의 일관성이 높아졌고, 기술 수준이 과대평가되는 문제가 줄어들었습니다.",
-        "technologies": [
-          "LangChain",
-          "Python",
-          "Prompt Engineering"
-        ]
-      },
-      {
-        "id": "capteam-troubleshooting-loop",
-        "title": "팀 수정 반복 루프 문제",
-        "problem": "선호사항이 조금만 반영되지 않아도 오류로 판단되어 팀 수정이 반복되었고, 이로 인해 실행 시간과 비용이 증가했습니다.",
-        "solution": "검증 결과를 error와 warning으로 분리하고, 반복 횟수와 수정 이력을 관리했습니다. 치명적인 오류가 계속 남는 경우에는 rule-based 팀 구성 결과로 fallback하도록 설계했습니다.",
-        "result": "불필요한 반복이 줄어들고, 팀 매칭 워크플로의 안정성이 개선되었습니다.",
-        "technologies": [
-          "LangGraph",
-          "Python",
-          "Rule-based Algorithm"
-        ]
-      },
-      {
-        "id": "capteam-troubleshooting-context-performance",
-        "title": "컨텍스트 길이와 성능 문제",
-        "problem": "모든 팀의 추천 이유, 강점, 약점을 한 번에 생성하면서 LLM 컨텍스트가 길어지고 응답 시간이 크게 증가하는 문제가 있었습니다.",
-        "solution": "팀 단위로 결과 생성을 분리하고 병렬 처리 구조를 적용했습니다. rate limit과 timeout을 고려해 worker 수와 batch 크기를 조정했습니다.",
-        "result": "처리 시간이 514.67초에서 179.44초로 감소했고, 약 2.87배 성능이 개선되었습니다.",
-        "technologies": [
-          "Python",
-          "Parallel Processing",
-          "LangChain"
-        ]
-      }
-    ],
-    "lessons": [],
-    "repository_url": "",
-    "source_url": "https://east-flyingfish-9ab.notion.site/AI-engineer-9266299fe9ba821d99b001fff221f43b"
-  },
-  {
-    "category": "project",
-    "project_id": "project-def-api",
-    "project_name": "Def API",
-    "summary": "보안 취약점 스캔 결과를 개발자가 이해하기 쉽게 요약하는 AI 서비스",
-    "period": {
-      "start": "2025",
-      "end": "2025",
-      "status": "completed"
-    },
-    "role": [
-      "AI 개발",
-      "모델 파인튜닝",
-      "Hugging Face 모델 배포"
-    ],
-    "technologies": [
-      "Python",
-      "PyTorch",
-      "Hugging Face",
-      "Transformers",
-      "PEFT",
-      "LoRA",
-      "BitsAndBytes"
-    ],
-    "team_members": [
-      {
-        "name": "김성현",
-        "role": "AI"
-      },
-      {
-        "name": "장준민",
-        "role": "AI"
-      },
-      {
-        "name": "김동은",
-        "role": "Frontend"
-      },
-      {
-        "name": "곽민석",
-        "role": "Backend"
-      }
-    ],
-    "motivation": {
-      "title": "개발 동기",
-      "content": "보안 취약점 스캔 결과는 내용이 복잡하고 개발자가 바로 이해하거나 수정 방향을 잡기 어렵다는 문제가 있었습니다. 이를 AI가 개발자 친화적인 보고서 형태로 정리하여 취약점 이해와 대응을 쉽게 만들고자 했습니다."
-    },
-    "development": [
-      {
-        "id": "def-api-development-fine-tuning",
-        "title": "DeepSeek-Coder 모델 파인튜닝",
-        "content": "DeepSeek-Coder-1.3B-Instruct 모델을 기반으로 보안 취약점 설명과 수정 방향을 생성할 수 있도록 파인튜닝 파이프라인을 구성했습니다. PEFT LoRA adapter와 BitsAndBytes 8bit quantization을 활용해 제한된 GPU 환경에서도 학습할 수 있도록 최적화했습니다.",
-        "technologies": [
-          "Python",
-          "PyTorch",
-          "Transformers",
-          "PEFT",
-          "LoRA",
-          "BitsAndBytes"
-        ],
-        "code_reference": ""
-      },
-      {
-        "id": "def-api-development-huggingface-deploy",
-        "title": "Hugging Face 모델 저장 및 배포",
-        "content": "학습한 모델을 저장한 뒤 Hugging Face에 업로드하여 외부에서 확인하고 활용할 수 있도록 배포했습니다.",
-        "technologies": [
-          "Hugging Face",
-          "Python"
-        ],
-        "code_reference": "https://huggingface.co/kshi3430/kshi3430-vulnerability-fix/tree/main"
-      }
-    ],
-    "troubleshooting": [
-      {
-        "id": "def-api-troubleshooting-oom",
-        "title": "모델 학습 중 메모리 부족 문제",
-        "problem": "Unsloth의 SFTTrainer를 사용해 모델 학습을 진행하는 과정에서 커널이 종료되거나 GPU 메모리 부족 문제가 발생했습니다.",
-        "solution": "Transformers Trainer로 학습 방식을 변경하여 batch size, sequence length 등 하이퍼파라미터를 더 세밀하게 조정할 수 있도록 했습니다.",
-        "result": "GPU 메모리 사용량이 안정화되었고, 제한된 환경에서도 모델 학습을 진행할 수 있게 되었습니다.",
-        "technologies": [
-          "Transformers",
-          "PyTorch",
-          "Hugging Face"
-        ]
-      }
-    ],
-    "lessons": [
-      {
-        "id": "def-api-lesson-tech-selection",
-        "title": "기술 선택 근거의 중요성",
-        "content": "최신 기술을 사용하는 것보다 프로젝트 목표와 실행 환경에 맞는 기술을 선택하는 것이 중요하다는 것을 배웠습니다. 모델 학습 과정에서 도구의 장단점과 환경 제약을 함께 고려해야 한다는 점을 느꼈습니다."
-      }
-    ],
-    "repository_url": "",
-    "source_url": "https://east-flyingfish-9ab.notion.site/AI-engineer-9266299fe9ba821d99b001fff221f43b"
-  }
-]
+      "development": [
+        {
+          "id": "capteam-development-dataset",
+          "title": "팀 매칭을 위한 설문 데이터 구조 설계",
+          "content": "희망 역할, 기술 스택, 구현 가능한 기능, 선호 팀원, 리더 선호 여부, 성격과 개발 스타일 등을 수집하는 설문 구조를 설계했습니다. 이 데이터를 AI가 학생을 분석하고 팀 매칭을 수행할 수 있는 입력 데이터로 활용했습니다.",
+          "technologies": [
+            "Python",
+            "Data Modeling"
+          ],
+          "code_reference": ""
+        },
+        {
+          "id": "capteam-development-structured-output",
+          "title": "Pydantic 기반 구조화된 AI 응답 처리",
+          "content": "학생 분석 결과와 팀 매칭 결과가 일정한 형식으로 반환되도록 Pydantic 기반 structured output을 적용했습니다. 학생 경험에서 키워드를 추출하고 이를 LLM 프롬프트에 전달하여 분석 결과의 일관성을 높였습니다.",
+          "technologies": [
+            "Pydantic",
+            "LangChain",
+            "Python"
+          ],
+          "code_reference": ""
+        },
+        {
+          "id": "capteam-development-langgraph-workflow",
+          "title": "LangGraph 기반 팀 매칭 워크플로 구현",
+          "content": "팀 생성, LLM 수정, 알고리즘 검증, LLM 검증, 최종 저장으로 이어지는 팀 매칭 워크플로를 LangGraph로 구성했습니다. 팀 구성 결과를 반복적으로 검토하고 보정하는 구조를 설계했습니다.",
+          "technologies": [
+            "LangGraph",
+            "LangChain",
+            "Python"
+          ],
+          "code_reference": ""
+        },
+        {
+          "id": "capteam-development-backend",
+          "title": "FastAPI 기반 AI 결과 API 구현",
+          "content": "학생 분석 결과와 팀 매칭 결과를 JSON 형태로 저장하고, 관리자 화면에서 사용할 수 있도록 API 응답 구조를 변환했습니다. 학생별 강점, 역할, 기술 수준, 기술 스택 점수 등을 제공하여 팀 구성 근거를 확인할 수 있도록 구현했습니다.",
+          "technologies": [
+            "FastAPI",
+            "Python",
+            "JSON"
+          ],
+          "code_reference": ""
+        }
+      ],
+      "troubleshooting": [
+        {
+          "id": "capteam-troubleshooting-randomness",
+          "title": "학생 분석 결과의 랜덤성과 과대평가 문제",
+          "problem": "LLM이 학생의 기술 수준을 일관성 없이 평가하거나, 단순 튜토리얼 수준의 구현 경험도 과대평가하는 문제가 있었습니다.",
+          "solution": "temperature를 0으로 설정하고 후처리 보정 로직을 추가했습니다. 경험 텍스트에서 '단순 구현'과 '실제 수행' 키워드 빈도를 추출해 프롬프트에 전달하고 실제 수행 근거가 충분히 확인될 때만 보통 이상을 부여했으며, 최종 등급이 보통이면 기술 점수를 최대 7점, 낮음이면 최대 4점으로 제한했습니다.",
+          "result": "학생 분석 결과의 일관성이 높아졌고, 기술 수준이 과대평가되는 문제가 줄어들었습니다.",
+          "technologies": [
+            "LangChain",
+            "Python",
+            "Prompt Engineering"
+          ]
+        },
+        {
+          "id": "capteam-troubleshooting-loop",
+          "title": "팀 수정 반복 루프 문제",
+          "problem": "팀원 선호 미반영까지 오류로 간주되어 최대 횟수까지 팀 수정이 반복되면서 응답 시간과 비용이 증가했습니다.",
+          "solution": "학생 누락·중복 및 인원 제한 위반만 필수 오류로 정의하고, 팀원 선호 미반영은 참고 경고로 분리했습니다. 반복 횟수와 이전 수정 내역을 기록해 동일 패턴 반복을 막고, 최대 횟수 초과 시 규칙 기반(Rule-based) 알고리즘으로 자동 fallback하도록 설계했습니다.",
+          "result": "불필요한 반복이 줄어들고, 팀 매칭 워크플로의 안정성이 개선되었습니다.",
+          "technologies": [
+            "LangGraph",
+            "Python",
+            "Rule-based Algorithm"
+          ]
+        },
+        {
+          "id": "capteam-troubleshooting-context-performance",
+          "title": "컨텍스트 길이와 성능 문제",
+          "problem": "모든 팀의 매칭 사유와 강약점을 단일 LLM 요청에서 생성하면서 컨텍스트 길이가 길어지고 응답 시간이 크게 증가했습니다.",
+          "solution": "팀 단위로 결과 생성을 분리하고 독립 작업을 병렬 처리 구조로 개편했습니다. Rate Limit과 timeout을 고려해 Worker 3개, Batch 6개로 제한해 안정성을 확보했습니다.",
+          "result": "전체 소요 시간이 514.67초에서 179.44초로 335.23초 단축되어 약 2.87배 속도가 향상되었습니다.",
+          "technologies": [
+            "Python",
+            "Parallel Processing",
+            "LangChain"
+          ]
+        }
+      ],
+      "lessons": [
+        {
+          "id": "capteam-lesson-security",
+          "title": "서비스 운영에서 보안의 중요성",
+          "content": "외부 트래픽이 대량 유입되어 Vercel 프론트엔드 서버에 문제가 발생한 경험을 통해 인증, 접근 제어, 요청 제한과 서버 안정성을 개발 단계부터 고려해야 한다는 점을 배웠습니다."
+        },
+        {
+          "id": "capteam-lesson-ai-tools",
+          "title": "AI 도구를 올바르게 활용하는 방법",
+          "content": "AI로 작성한 코드라도 개발자가 구조와 동작 원리를 이해해야 실제 사용자 환경의 오류를 빠르게 해결할 수 있다는 점을 배웠습니다. AI를 보조 도구로 활용하면서 직접 코드를 작성하고 문제를 해결하는 역량을 기르고자 합니다."
+        }
+      ],
+      "repository_url": "",
+      "source_url": "https://east-flyingfish-9ab.notion.site/AI-engineer-9266299fe9ba821d99b001fff221f43b"
+    }
+  ]
 }
