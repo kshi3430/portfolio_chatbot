@@ -195,6 +195,7 @@ async function getEmbeddedDocuments(client: OpenAI): Promise<EmbeddedDocument[]>
   const embeddings = await client.embeddings.create({
     model: EMBEDDING_PASSAGE_MODEL,
     input: documents.map((doc) => doc.content),
+    encoding_format: "float",
   });
   const sortedData = [...embeddings.data].sort((a, b) => a.index - b.index);
 
@@ -221,7 +222,11 @@ function cosineSimilarity(a: number[], b: number[]) {
 async function retrieve(client: OpenAI, question: string) {
   const [documents, queryEmbedding] = await Promise.all([
     getEmbeddedDocuments(client),
-    client.embeddings.create({ model: EMBEDDING_QUERY_MODEL, input: question }),
+    client.embeddings.create({
+      model: EMBEDDING_QUERY_MODEL,
+      input: question,
+      encoding_format: "float",
+    }),
   ]);
   const vector = queryEmbedding.data[0].embedding;
 
