@@ -19,8 +19,10 @@ examples/
 # ChromaDB
 chroma_db/
 
-# 빌드 결과물 (data/projects/에서 생성됨)
-data/projects.json
+# 빌드 결과물 안내: data/projects.json과 web/data/projects.json은 CI 및 Vercel API 동기화를 위해 추적합니다.
+
+# QA 리포트 및 로컬 스크린샷
+.gstack/
 
 # IDE
 .vscode/
