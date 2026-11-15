@@ -8,11 +8,11 @@ FastAPI 챗봇 API 서버
 
 import os
 from pathlib import Path
-from typing import Dict, Any
+from typing import Dict, Any, Literal
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 try:
     from .rag_core import build_rag_engine
@@ -44,8 +44,14 @@ rag_engine = None
 
 
 # 요청/응답 모델 정의
+class ChatHistoryItem(BaseModel):
+    role: Literal["user", "assistant"]
+    content: str
+
+
 class ChatRequest(BaseModel):
     question: str
+    history: list[ChatHistoryItem] = Field(default_factory=list)
 
 
 class ChatResponse(BaseModel):
@@ -61,9 +67,9 @@ async def startup_event():
     global rag_engine
 
     # API 키 확인
-    openai_api_key = os.getenv("OPENAI_API_KEY")
-    if not openai_api_key:
-        raise RuntimeError("OPENAI_API_KEY가 설정되지 않았습니다.")
+    upstage_api_key = os.getenv("UPSTAGE_API_KEY")
+    if not upstage_api_key:
+        raise RuntimeError("UPSTAGE_API_KEY가 설정되지 않았습니다.")
 
     # projects.json 경로
     projects_json = ROOT_DIR / "data" / "projects.json"
@@ -73,13 +79,20 @@ async def startup_event():
     # RAG 엔진 빌드
     rag_engine = build_rag_engine(
         projects_json_path=str(projects_json),
-        openai_api_key=openai_api_key,
+        upstage_api_key=upstage_api_key,
         rebuild=False,  # 기존 DB 재사용
         top_k=5,
         chunk_size=1000,
         chunk_overlap=0,
         persist_directory=str(ROOT_DIR / "chroma_db"),
-        openai_model=os.getenv("OPENAI_MODEL", "gpt-5-mini")
+        upstage_model=os.getenv("UPSTAGE_MODEL", "solar-pro4"),
+        passage_embedding_model=os.getenv(
+            "UPSTAGE_EMBEDDING_PASSAGE_MODEL", "solar-embedding-2-passage"
+        ),
+        query_embedding_model=os.getenv(
+            "UPSTAGE_EMBEDDING_QUERY_MODEL", "solar-embedding-2-query"
+        ),
+        base_url=os.getenv("UPSTAGE_BASE_URL", "https://api.upstage.ai/v1"),
     )
 
     print("✅ RAG 엔진 준비 완료!")
@@ -133,7 +146,15 @@ async def chat(request: ChatRequest) -> ChatResponse:
 
     try:
         # RAG 실행
-        result = rag_engine.query(request.question)
+        history = [
+            {
+                "role": item.role,
+                "content": item.content.strip()[:2000],
+            }
+            for item in request.history[-10:]
+            if item.content.strip()
+        ]
+        result = rag_engine.query(request.question, history=history)
 
         return ChatResponse(
             answer=result['answer'],
@@ -152,6 +173,6 @@ if __name__ == "__main__":
     uvicorn.run(
         "api:app",
         host="0.0.0.0",
-        port=8000,
+        port=8001,
         reload=True  # 코드 변경 시 자동 재시작
     )

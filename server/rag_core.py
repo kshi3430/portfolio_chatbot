@@ -18,7 +18,6 @@ from pathlib import Path
 os.environ.setdefault("ANONYMIZED_TELEMETRY", "False")
 
 from chromadb.config import Settings
-from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 from openai import OpenAI
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -30,7 +29,50 @@ except ImportError:
     from prompts import BASELINE_SYSTEM_PROMPT, QA_PROMPT_TEMPLATE
 
 
-RAG_INDEX_VERSION = "portfolio-json-v5"
+RAG_INDEX_VERSION = "portfolio-json-v9-upstage-solar-embedding-2"
+DEFAULT_UPSTAGE_BASE_URL = "https://api.upstage.ai/v1"
+DEFAULT_UPSTAGE_MODEL = "solar-pro4"
+DEFAULT_PASSAGE_EMBEDDING_MODEL = "solar-embedding-2-passage"
+DEFAULT_QUERY_EMBEDDING_MODEL = "solar-embedding-2-query"
+
+
+class UpstageEmbeddingsAdapter:
+    """LangChain/Chroma가 요구하는 임베딩 인터페이스를 Upstage API로 제공합니다."""
+
+    def __init__(
+        self,
+        client: OpenAI,
+        passage_model: str = DEFAULT_PASSAGE_EMBEDDING_MODEL,
+        query_model: str = DEFAULT_QUERY_EMBEDDING_MODEL,
+        batch_size: int = 50,
+    ):
+        self.client = client
+        self.passage_model = passage_model
+        self.query_model = query_model
+        self.batch_size = batch_size
+
+    def embed_documents(self, texts: List[str]) -> List[List[float]]:
+        if not texts:
+            return []
+
+        vectors: List[List[float]] = []
+        for start in range(0, len(texts), self.batch_size):
+            batch = texts[start : start + self.batch_size]
+            response = self.client.embeddings.create(
+                model=self.passage_model,
+                input=batch,
+            )
+            vectors.extend(
+                item.embedding for item in sorted(response.data, key=lambda item: item.index)
+            )
+        return vectors
+
+    def embed_query(self, text: str) -> List[float]:
+        response = self.client.embeddings.create(
+            model=self.query_model,
+            input=text,
+        )
+        return response.data[0].embedding
 
 
 class RAGEngine:
@@ -46,9 +88,11 @@ class RAGEngine:
     def __init__(
         self,
         projects_json_path: str,
-        openai_api_key: str,
-        openai_model: str = "gpt-5-mini",
-        embedding_model: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+        upstage_api_key: str,
+        upstage_model: str = DEFAULT_UPSTAGE_MODEL,
+        passage_embedding_model: str = DEFAULT_PASSAGE_EMBEDDING_MODEL,
+        query_embedding_model: str = DEFAULT_QUERY_EMBEDDING_MODEL,
+        base_url: str = DEFAULT_UPSTAGE_BASE_URL,
         persist_directory: str = "./chroma_db",
         top_k: int = 3,
         chunk_size: int = 1000,
@@ -57,35 +101,38 @@ class RAGEngine:
         """
         Args:
             projects_json_path: projects.json 파일 경로
-            openai_api_key: OpenAI API 키
-            openai_model: OpenAI 응답 생성 모델명
-            embedding_model: HuggingFace 임베딩 모델명 (학생 튜닝 가능)
+            upstage_api_key: Upstage API 키
+            upstage_model: Upstage 채팅 모델명
+            passage_embedding_model: 문서 저장용 임베딩 모델명
+            query_embedding_model: 질의 검색용 임베딩 모델명
+            base_url: Upstage OpenAI-compatible API Base URL
             persist_directory: ChromaDB 저장 경로
             top_k: 검색할 문서 개수 (학생 튜닝 가능)
             chunk_size: 문서 분할 크기 (학생 튜닝 가능)
             chunk_overlap: 청크 간 겹침 (학생 튜닝 가능)
         """
         self.projects_json_path = projects_json_path
-        self.openai_api_key = openai_api_key
-        self.openai_model = openai_model
+        self.upstage_api_key = upstage_api_key
+        self.upstage_model = upstage_model
+        self.passage_embedding_model = passage_embedding_model
+        self.query_embedding_model = query_embedding_model
+        self.base_url = base_url
         self.top_k = top_k
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
         self.persist_directory = persist_directory
 
-        # 1. 임베딩 모델 초기화 (무료)
-        print(f"🔧 임베딩 모델 로딩: {embedding_model}")
-        self.embeddings = HuggingFaceEmbeddings(
-            model_name=embedding_model,
-            model_kwargs={'device': 'cpu'},  # GPU 없어도 작동
-            encode_kwargs={'normalize_embeddings': True}
+        # 1. 답변 생성과 임베딩에 같은 Upstage OpenAI-compatible 클라이언트를 사용합니다.
+        print(f"🔧 LLM 초기화: {upstage_model} ({base_url})")
+        self.client = OpenAI(api_key=upstage_api_key, base_url=base_url, timeout=30.0)
+        print(f"🔧 임베딩 모델 초기화: passage={passage_embedding_model}, query={query_embedding_model}")
+        self.embeddings = UpstageEmbeddingsAdapter(
+            self.client,
+            passage_model=passage_embedding_model,
+            query_model=query_embedding_model,
         )
 
-        # 2. OpenAI 클라이언트 초기화
-        print(f"🔧 LLM 초기화: {openai_model}")
-        self.client = OpenAI(api_key=openai_api_key)
-
-        # 3. 벡터 스토어 초기화
+        # 2. 벡터 스토어 초기화
         self.vectorstore = None
         self.retriever = None
 
@@ -213,9 +260,26 @@ class RAGEngine:
                 f"기간: {period_text}",
                 f"역할: {self._metadata_value(role)}",
                 f"기술: {self._metadata_value(technologies)}",
+                f"팀원 및 역할: {self._metadata_value(project.get('team_members') or [])}",
                 f"개발 동기: {motivation.get('content', '') if isinstance(motivation, dict) else motivation}",
+                f"포트폴리오 원문: {project.get('source_url') or ''}",
             ])
             append_doc(overview, {**base_metadata, 'source': f'{project_name} 개요', 'section': 'overview'})
+
+            team_members = [member for member in (project.get('team_members') or []) if isinstance(member, dict)]
+            if team_members:
+                team_lines = [
+                    f"프로젝트명: {project_name}",
+                    f"{project_name} 팀원 구성과 담당 역할",
+                ]
+                team_lines.extend(
+                    f"- {member.get('name', '')}: {member.get('role', '')}"
+                    for member in team_members
+                )
+                append_doc(
+                    "\n".join(team_lines),
+                    {**base_metadata, 'source': f'{project_name} 팀원 및 역할', 'section': 'team'}
+                )
 
             troubleshooting_items = [item for item in (project.get('troubleshooting') or []) if isinstance(item, dict)]
             if troubleshooting_items:
@@ -328,11 +392,14 @@ class RAGEngine:
             client_settings=self._chroma_client_settings()
         )
         Path(self.persist_directory).mkdir(parents=True, exist_ok=True)
-        (Path(self.persist_directory) / ".rag_index_version").write_text(RAG_INDEX_VERSION, encoding="utf-8")
+        index_signature = (
+            f"{RAG_INDEX_VERSION}:{self.passage_embedding_model}:{self.query_embedding_model}"
+        )
+        (Path(self.persist_directory) / ".rag_index_version").write_text(index_signature, encoding="utf-8")
         print(f"✅ 벡터 스토어 구축 완료: {self.persist_directory}")
 
     def build_qa_chain(self):
-        """Retriever 구성: 검색은 Chroma, 생성은 OpenAI Responses API가 담당합니다."""
+        """Retriever 구성: 검색은 Chroma, 생성은 Upstage Chat Completions API가 담당합니다."""
         if self.vectorstore is None:
             raise ValueError("벡터 스토어가 없습니다. build_vectorstore()를 먼저 실행하세요.")
 
@@ -346,17 +413,42 @@ class RAGEngine:
         )
         print("✅ Retriever 구축 완료")
 
-    def _invoke_openai(self, question: str, context: str) -> str:
-        prompt = QA_PROMPT_TEMPLATE.format(context=context, question=question)
-        response = self.client.responses.create(
-            model=self.openai_model,
-            instructions=BASELINE_SYSTEM_PROMPT,
-            input=prompt,
-            max_output_tokens=1000,
-        )
-        return response.output_text.strip()
+    def _format_history(self, history: List[Dict[str, str]]) -> str:
+        if not history:
+            return "(이전 대화 없음)"
 
-    def query(self, question: str) -> Dict[str, Any]:
+        role_labels = {"user": "사용자", "assistant": "어시스턴트"}
+        return "\n".join(
+            f"{role_labels.get(item.get('role', ''), '사용자')}: {item.get('content', '').strip()}"
+            for item in history[-10:]
+            if item.get('content', '').strip()
+        )
+
+    def _build_retrieval_query(self, question: str, history: List[Dict[str, str]]) -> str:
+        if not history:
+            return question
+
+        recent_history = self._format_history(history[-6:])
+        return f"이전 대화:\n{recent_history}\n\n현재 질문: {question}"
+
+    def _invoke_llm(self, question: str, context: str, history: List[Dict[str, str]]) -> str:
+        prompt = QA_PROMPT_TEMPLATE.format(
+            history=self._format_history(history),
+            context=context,
+            question=question,
+        )
+        response = self.client.chat.completions.create(
+            model=self.upstage_model,
+            messages=[
+                {"role": "system", "content": BASELINE_SYSTEM_PROMPT},
+                {"role": "user", "content": prompt},
+            ],
+            temperature=0.2,
+            max_tokens=1000,
+        )
+        return (response.choices[0].message.content or "").strip()
+
+    def query(self, question: str, history: List[Dict[str, str]] | None = None) -> Dict[str, Any]:
         """
         질문에 대한 답변 + 출처 반환
 
@@ -372,9 +464,11 @@ class RAGEngine:
         if self.retriever is None:
             raise ValueError("Retriever가 없습니다. build_qa_chain()을 먼저 실행하세요.")
 
-        docs = self.retriever.invoke(question)
+        history = history or []
+        retrieval_query = self._build_retrieval_query(question, history)
+        docs = self.retriever.invoke(retrieval_query)
         context = "\n\n---\n\n".join(doc.page_content for doc in docs)
-        answer = self._invoke_openai(question, context)
+        answer = self._invoke_llm(question, context, history)
 
         sources = []
         for doc in docs:
@@ -392,7 +486,7 @@ class RAGEngine:
     def from_existing_db(
         cls,
         projects_json_path: str,
-        openai_api_key: str,
+        upstage_api_key: str,
         persist_directory: str = "./chroma_db",
         **kwargs
     ):
@@ -401,7 +495,7 @@ class RAGEngine:
         """
         instance = cls(
             projects_json_path=projects_json_path,
-            openai_api_key=openai_api_key,
+            upstage_api_key=upstage_api_key,
             persist_directory=persist_directory,
             **kwargs
         )
@@ -419,7 +513,7 @@ class RAGEngine:
 
 def build_rag_engine(
     projects_json_path: str,
-    openai_api_key: str,
+    upstage_api_key: str,
     rebuild: bool = False,
     **kwargs
 ) -> RAGEngine:
@@ -428,7 +522,7 @@ def build_rag_engine(
 
     Args:
         projects_json_path: projects.json 경로
-        openai_api_key: OpenAI API 키
+        upstage_api_key: Upstage API 키
         rebuild: True면 벡터 DB 재구축, False면 기존 DB 재사용
         **kwargs: RAGEngine 생성자 파라미터
 
@@ -442,14 +536,17 @@ def build_rag_engine(
     data_changed = data_mtime > db_mtime
     version_file = Path(persist_dir) / ".rag_index_version"
     index_version = version_file.read_text(encoding="utf-8").strip() if version_file.exists() else ""
-    index_outdated = index_version != RAG_INDEX_VERSION
+    passage_model = kwargs.get('passage_embedding_model', DEFAULT_PASSAGE_EMBEDDING_MODEL)
+    query_model = kwargs.get('query_embedding_model', DEFAULT_QUERY_EMBEDDING_MODEL)
+    expected_index_version = f"{RAG_INDEX_VERSION}:{passage_model}:{query_model}"
+    index_outdated = index_version != expected_index_version
 
     # 기존 DB가 있고 rebuild=False면 재사용하되, 데이터나 인덱스 구조가 바뀌면 자동 재구축
     if not rebuild and os.path.exists(persist_dir) and not data_changed and not index_outdated:
         print("🔄 기존 벡터 DB 재사용")
         return RAGEngine.from_existing_db(
             projects_json_path=projects_json_path,
-            openai_api_key=openai_api_key,
+            upstage_api_key=upstage_api_key,
             **kwargs
         )
 
@@ -462,7 +559,7 @@ def build_rag_engine(
     print("🏗️  벡터 DB 새로 구축")
     engine = RAGEngine(
         projects_json_path=projects_json_path,
-        openai_api_key=openai_api_key,
+        upstage_api_key=upstage_api_key,
         **kwargs
     )
     engine.build_vectorstore()

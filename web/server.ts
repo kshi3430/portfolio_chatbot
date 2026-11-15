@@ -80,14 +80,30 @@ async function startServer() {
         return res.status(400).json({ error: "Message is required" });
       }
 
-      const ragApiUrl = process.env.RAG_API_URL || "http://127.0.0.1:8000";
+      const history = Array.isArray(req.body?.history)
+        ? req.body.history
+            .filter((item: any) =>
+              item &&
+              (item.role === "user" || item.role === "assistant") &&
+              typeof item.content === "string" &&
+              item.content.trim()
+            )
+            .slice(-10)
+            .map((item: any) => ({
+              role: item.role,
+              content: item.content.trim().slice(0, 2000),
+            }))
+        : [];
+
+      const ragApiUrl = process.env.RAG_API_URL || "http://127.0.0.1:8001";
       const ragResponse = await fetch(`${ragApiUrl.replace(/\/$/, "")}/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          question: message,
+          question: message.trim(),
+          history,
         }),
       });
 

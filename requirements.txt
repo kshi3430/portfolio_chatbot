@@ -12,5 +12,4 @@ uvicorn>=0.30.0
 langchain==0.3.14
 langchain-community==0.3.13
 langchain-chroma==0.2.0
-sentence-transformers==3.3.1
 python-dotenv==1.0.1
