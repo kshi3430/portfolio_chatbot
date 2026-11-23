@@ -34,7 +34,6 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.schema import Document
 from langgraph.graph import StateGraph, END
 from rank_bm25 import BM25Okapi
-from kiwipiepy import Kiwi
 
 try:
     from typesafe_sdk import TypeSafeClient, Choice
@@ -224,6 +223,7 @@ class UpstageEmbeddingsAdapter:
             response = self.client.embeddings.create(
                 model=self.passage_model,
                 input=batch,
+                encoding_format="float",
             )
             vectors.extend(
                 item.embedding for item in sorted(response.data, key=lambda item: item.index)
@@ -234,31 +234,54 @@ class UpstageEmbeddingsAdapter:
         response = self.client.embeddings.create(
             model=self.query_model,
             input=text,
+            encoding_format="float",
         )
         return response.data[0].embedding
 
 
 class KiwiBM25Tokenizer:
-    """kiwipiepy 한국어 형태소 분석기 + 영문/숫자 정규화 기반 BM25 토크나이저"""
+    """
+    Render 무료 플랜(512MB RAM) OOM 방지를 위한 초경량 한국어 어간/N-gram + 영문/숫자 BM25 토크나이저.
+    (환경변수 USE_KIWI_TOKENIZER=1 설정 시에만 kiwipiepy 네이티브 사전을 로드합니다.)
+    """
 
     MEANINGFUL_TAGS = {
-        "NNG", "NNP", "NNB", "NR", "NP",  # 체언(명사, 수사, 대명사)
-        "VV", "VA",                        # 용언(동사, 형용사)
-        "MAG",                             # 일반부사
-        "SL", "SN", "SH",                  # 외국어, 숫자, 한자
+        "NNG", "NNP", "NNB", "NR", "NP",
+        "VV", "VA",
+        "MAG",
+        "SL", "SN", "SH",
     }
 
-    # 모든 포트폴리오/개인정보 문서에 공통으로 등장해 BM25 변별력을 떨어뜨리는 불용어 제거
     DOMAIN_STOPWORDS = {
-        "김성현", "성현", "김성", "좋아하", "알리", "주다", "무엇", "어떤", "어떻",
-        "대하", "관하", "관련", "정보", "소개", "설명", "말하", "궁금", "궁금하",
+        "김성현", "성현", "김성", "좋아하", "좋아하는", "알리", "알려", "알려줘", "주다", "무엇", "어떤", "어떻",
+        "대하", "대해", "관하", "관해", "관련", "정보", "소개", "설명", "말하", "궁금", "궁금하", "궁금해",
         "있", "없", "하", "되", "같", "것", "수", "등", "점", "중", "위", "때",
         "주로", "가장", "제일", "많이", "자주", "전체", "내용", "부분",
-        "지금", "정리", "목록", "방법", "편", "적", "거", "게", "걸",
+        "지금", "정리", "목록", "방법", "편", "적", "거", "게", "걸", "뭐야", "뭔가",
     }
 
+    KOREAN_SUFFIX_RE = re.compile(
+        r"(으로부터|로부터|에서부터|에게는|에서는|으로는|이라도|이라고|이라며|이지만|이나마|에게서|한테서|"
+        r"입니다|합니다|했습니다|있습니다|없습니다|됩니다|였습니|이었습|이라고|라는|이란|에서|에게|한테|으로|으로써|로서|"
+        r"부터|까지|처럼|보다|하고|이나|에는|조차|마저|이며|이고|이나|든지|라도|이랑|랑|하고|"
+        r"은|는|이|가|을|를|의|에|로|과|와|도|만|며|고|서|지|네|요|야)$"
+    )
+
     def __init__(self):
-        self.kiwi = Kiwi()
+        self.kiwi = None
+        if os.getenv("USE_KIWI_TOKENIZER", "").strip() == "1":
+            try:
+                from kiwipiepy import Kiwi  # type: ignore
+
+                self.kiwi = Kiwi(
+                    num_workers=1,
+                    load_default_dict=False,
+                    load_typo_dict=False,
+                    load_multi_dict=False,
+                    model_type="cong",
+                )
+            except Exception:
+                self.kiwi = None
 
     def tokenize(self, text: str) -> List[str]:
         if not text or not text.strip():
@@ -267,15 +290,37 @@ class KiwiBM25Tokenizer:
         normalized = text.lower()
         tokens: List[str] = []
 
-        # 1. Kiwi 형태소 분석 토큰 추출 (불용어 제외)
-        for token in self.kiwi.tokenize(normalized):
-            form = token.form.strip()
-            if not form or form in self.DOMAIN_STOPWORDS:
-                continue
-            if token.tag in self.MEANINGFUL_TAGS and (len(form) > 1 or token.tag in {"SL", "SN", "NNP", "NNG"}):
-                tokens.append(form)
+        if self.kiwi is not None:
+            for token in self.kiwi.tokenize(normalized):
+                form = token.form.strip()
+                if not form or form in self.DOMAIN_STOPWORDS:
+                    continue
+                if token.tag in self.MEANINGFUL_TAGS and (
+                    len(form) > 1 or token.tag in {"SL", "SN", "NNP", "NNG"}
+                ):
+                    tokens.append(form)
+        else:
+            # 초경량 한국어 조사/어미 제거 + 복합명사 분해를 위한 2-gram 서브워드 추출
+            raw_chunks = re.findall(r"[가-힣]+|[0-9a-zA-Z]+", normalized)
+            for chunk in raw_chunks:
+                if chunk in self.DOMAIN_STOPWORDS:
+                    continue
+                if re.match(r"^[가-힣]+$", chunk):
+                    stem = self.KOREAN_SUFFIX_RE.sub("", chunk)
+                    if len(stem) >= 1 and stem not in self.DOMAIN_STOPWORDS:
+                        tokens.append(stem)
+                    if len(chunk) >= 2 and chunk != stem and chunk not in self.DOMAIN_STOPWORDS:
+                        tokens.append(chunk)
+                    # 복합명사('기술스택', '겨울방학', '국제교류' 등) 매칭을 위한 2글자 바이그램 추가
+                    if len(stem) >= 3:
+                        for i in range(len(stem) - 1):
+                            bg = stem[i : i + 2]
+                            if bg not in self.DOMAIN_STOPWORDS:
+                                tokens.append(bg)
+                elif len(chunk) >= 2:
+                    tokens.append(chunk)
 
-        # 2. 영문/숫자 포함 복합 어절(예: 85kg, p95, solar-pro4, a형) 보조 토큰화
+        # 영문/숫자 포함 복합 어절(예: 85kg, p95, solar-pro4, a형) 보조 토큰화
         compound_words = re.findall(r"[0-9a-zA-Z]+[0-9a-zA-Z가-힣_-]*", normalized)
         for word in compound_words:
             if len(word) >= 2 and word not in self.DOMAIN_STOPWORDS:

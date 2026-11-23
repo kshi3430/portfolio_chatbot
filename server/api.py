@@ -6,6 +6,7 @@ FastAPI 챗봇 API 서버
 - GET /health: 서버 및 RAG/Jev 상태 확인
 """
 
+import asyncio
 import json
 import os
 from pathlib import Path
@@ -40,6 +41,9 @@ app.add_middleware(
 )
 
 rag_engine = None
+_init_lock = asyncio.Lock()
+_init_task: asyncio.Task | None = None
+_init_error: Exception | None = None
 
 
 class ChatHistoryItem(BaseModel):
@@ -57,11 +61,7 @@ class ChatResponse(BaseModel):
     sources: list
 
 
-@app.on_event("startup")
-async def startup_event():
-    """서버 시작 시 RAG 엔진(Hybrid Search + Jev + LangGraph) 초기화"""
-    global rag_engine
-
+def _build_engine_sync():
     load_dotenv(ROOT_DIR / ".env", override=True)
     upstage_api_key = os.getenv("UPSTAGE_API_KEY")
     if not upstage_api_key:
@@ -71,8 +71,7 @@ async def startup_event():
     personal_json = ROOT_DIR / "data" / "personal.json"
 
     print("🚀 RAG 엔진(Jev + Hybrid Search + LangGraph) 초기화 중...")
-
-    rag_engine = build_rag_engine(
+    engine = build_rag_engine(
         projects_json_path=str(projects_json),
         personal_json_path=str(personal_json),
         upstage_api_key=upstage_api_key,
@@ -92,8 +91,32 @@ async def startup_event():
         ),
         base_url=os.getenv("UPSTAGE_BASE_URL", "https://api.upstage.ai/v1"),
     )
-
     print("✅ RAG 엔진 준비 완료!")
+    return engine
+
+
+async def _ensure_rag_engine():
+    global rag_engine, _init_error
+    if rag_engine is not None:
+        return rag_engine
+    async with _init_lock:
+        if rag_engine is not None:
+            return rag_engine
+        try:
+            _init_error = None
+            rag_engine = await asyncio.to_thread(_build_engine_sync)
+            return rag_engine
+        except Exception as e:
+            _init_error = e
+            print(f"❌ RAG 엔진 초기화 실패: {e}")
+            raise HTTPException(status_code=503, detail=f"RAG 엔진 초기화 실패: {e}")
+
+
+@app.on_event("startup")
+async def startup_event():
+    """Render 포트 스캔 타임아웃을 방지하기 위해 포트를 즉시 열고 백그라운드에서 RAG 엔진을 초기화합니다."""
+    global _init_task
+    _init_task = asyncio.create_task(_ensure_rag_engine())
 
 
 @app.get("/")
@@ -111,7 +134,13 @@ async def root():
 @app.get("/health")
 async def health_check():
     if rag_engine is None:
-        raise HTTPException(status_code=503, detail="RAG 엔진이 초기화되지 않았습니다.")
+        if _init_error is not None:
+            raise HTTPException(status_code=503, detail=f"RAG 엔진 초기화 오류: {_init_error}")
+        return {
+            "status": "starting",
+            "rag_engine": "initializing",
+            "jev_classifier": "pending",
+        }
 
     load_dotenv(ROOT_DIR / ".env", override=True)
     rag_engine.ensure_jev_client(os.getenv("TYPESAFE_API_KEY", ""))
@@ -123,9 +152,8 @@ async def health_check():
     }
 
 
-def _prepare_chat_inputs(request: ChatRequest) -> list[dict[str, str]]:
-    if rag_engine is None:
-        raise HTTPException(status_code=503, detail="RAG 엔진이 초기화되지 않았습니다.")
+async def _prepare_chat_inputs(request: ChatRequest) -> list[dict[str, str]]:
+    await _ensure_rag_engine()
 
     if not request.question or not request.question.strip():
         raise HTTPException(status_code=400, detail="질문이 비어있습니다.")
@@ -146,7 +174,7 @@ def _prepare_chat_inputs(request: ChatRequest) -> list[dict[str, str]]:
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest) -> ChatResponse:
-    history = _prepare_chat_inputs(request)
+    history = await _prepare_chat_inputs(request)
 
     try:
         result = rag_engine.query(request.question, history=history)
@@ -163,7 +191,7 @@ async def chat(request: ChatRequest) -> ChatResponse:
 
 @app.post("/chat/stream")
 async def chat_stream(request: ChatRequest):
-    history = _prepare_chat_inputs(request)
+    history = await _prepare_chat_inputs(request)
 
     def event_generator():
         try:
