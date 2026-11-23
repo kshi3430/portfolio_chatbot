@@ -17,6 +17,9 @@ export default function App() {
   const highlightTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
+    // 페이지 진입 시 Render 백엔드를 백그라운드에서 미리 깨워 챗봇 첫 응답 지연을 줄입니다.
+    fetch("/api/chat?warmup=1").catch(() => {});
+
     // Automatically fade out the tooltip after 8 seconds if not interacted with
     const timer = setTimeout(() => {
       setShowTooltip(false);

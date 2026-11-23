@@ -1115,8 +1115,25 @@ function writeSseEvent(res: any, payload: Record<string, unknown>) {
 }
 
 export default async function handler(req: any, res: any) {
+  if (req.method === "GET") {
+    if (process.env.RAG_API_URL) {
+      const ragApiUrl = process.env.RAG_API_URL.replace(/\/$/, "");
+      try {
+        const health = await fetch(`${ragApiUrl}/health`, {
+          method: "GET",
+          signal: AbortSignal.timeout(4000),
+        });
+        const data = await health.json().catch(() => null);
+        return res.status(200).json({ ok: true, backend: data || { status: health.status } });
+      } catch {
+        return res.status(200).json({ ok: true, backend: { status: "waking_up" } });
+      }
+    }
+    return res.status(200).json({ ok: true, backend: { status: "serverless_only" } });
+  }
+
   if (req.method !== "POST") {
-    res.setHeader("Allow", "POST");
+    res.setHeader("Allow", "GET, POST");
     return res.status(405).json({ error: "Method not allowed" });
   }
 
@@ -1128,7 +1145,7 @@ export default async function handler(req: any, res: any) {
   const wantsStream = req.body?.stream === true;
   const history = normalizeHistory(req.body?.history);
 
-  // 외부 RAG_API_URL이 명시된 경우 해당 서버로 프록시
+  // 외부 RAG_API_URL이 명시된 경우 해당 서버로 프록시 (슬립/5xx/8초 초과 시 즉시 Vercel 내장 RAG fallback)
   if (process.env.RAG_API_URL) {
     const ragApiUrl = process.env.RAG_API_URL.replace(/\/$/, "");
     const targetEndpoint = wantsStream ? "/chat/stream" : "/chat";
@@ -1137,40 +1154,44 @@ export default async function handler(req: any, res: any) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question: message, history }),
+        signal: AbortSignal.timeout(8000),
       });
 
-      if (!ragResponse.ok) {
+      if (ragResponse.ok) {
+        if (wantsStream) {
+          res.status(200);
+          res.setHeader("Content-Type", "text/event-stream; charset=utf-8");
+          res.setHeader("Cache-Control", "no-cache, no-transform");
+          res.setHeader("Connection", "keep-alive");
+          res.setHeader("X-Accel-Buffering", "no");
+          if (typeof res.flushHeaders === "function") res.flushHeaders();
+
+          const reader = ragResponse.body?.getReader();
+          if (!reader) return res.end();
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            res.write(Buffer.from(value));
+          }
+          return res.end();
+        }
+
+        const data = await ragResponse.json().catch(() => null);
+        return res.status(200).json({
+          text: data?.answer || "답변을 가져오는 도중 문제가 발생했습니다.",
+          sources: data?.sources || [],
+        });
+      }
+
+      if (ragResponse.status < 500) {
         const data = await ragResponse.json().catch(() => null);
         return res
           .status(ragResponse.status)
           .json({ error: data?.detail || data?.error || "RAG API request failed" });
       }
-
-      if (wantsStream) {
-        res.status(200);
-        res.setHeader("Content-Type", "text/event-stream; charset=utf-8");
-        res.setHeader("Cache-Control", "no-cache, no-transform");
-        res.setHeader("Connection", "keep-alive");
-        res.setHeader("X-Accel-Buffering", "no");
-        if (typeof res.flushHeaders === "function") res.flushHeaders();
-
-        const reader = ragResponse.body?.getReader();
-        if (!reader) return res.end();
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          res.write(Buffer.from(value));
-        }
-        return res.end();
-      }
-
-      const data = await ragResponse.json().catch(() => null);
-      return res.status(200).json({
-        text: data?.answer || "답변을 가져오는 도중 문제가 발생했습니다.",
-        sources: data?.sources || [],
-      });
+      console.warn(`RAG API returned ${ragResponse.status}; falling back to Vercel serverless RAG.`);
     } catch (error: any) {
-      console.error("Vercel RAG API Proxy Error:", error);
+      console.warn("Vercel RAG API Proxy fallback triggered:", error?.message || error);
     }
   }
 
