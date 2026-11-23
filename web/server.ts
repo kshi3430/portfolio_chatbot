@@ -1,5 +1,6 @@
 import express from "express";
 import path from "path";
+import { createHash } from "crypto";
 import { createServer as createViteServer } from "vite";
 import dotenv from "dotenv";
 import { mkdir, readFile, rename, writeFile } from "fs/promises";
@@ -27,17 +28,23 @@ async function startServer() {
     }
   };
 
-  const registerVisitorSession = (sessionId: string) => {
+  const registerVisitorSession = (sessionId: string, ipHash: string | null) => {
     visitorQueue = visitorQueue.then(async () => {
       const data = await readVisitorData();
-      if (data.sessions.includes(sessionId)) {
+      const idKey = `id:${sessionId}`;
+      const alreadyCounted =
+        data.sessions.includes(sessionId) ||
+        data.sessions.includes(idKey) ||
+        (ipHash ? data.sessions.includes(ipHash) : false);
+      if (alreadyCounted) {
         return { count: data.count, counted: false };
       }
 
+      const keysToStore = ipHash ? [idKey, ipHash] : [idKey];
       const nextData: VisitorData = {
         count: data.count + 1,
-        // 파일이 끝없이 커지지 않도록 최근 세션 ID만 보관합니다.
-        sessions: [...data.sessions, sessionId].slice(-10000),
+        // 파일이 끝없이 커지지 않도록 최근 방문자 식별 키만 보관합니다.
+        sessions: [...data.sessions, ...keysToStore].slice(-10000),
       };
       await mkdir(visitorDataDir, { recursive: true });
       const temporaryFile = `${visitorDataFile}.tmp`;
@@ -65,7 +72,15 @@ async function startServer() {
       if (typeof sessionId !== "string" || sessionId.length < 8 || sessionId.length > 100) {
         return res.status(400).json({ error: "유효한 방문 세션 ID가 필요합니다." });
       }
-      res.json(await registerVisitorSession(sessionId));
+      const forwarded = req.headers["x-forwarded-for"];
+      const rawIp =
+        typeof forwarded === "string"
+          ? forwarded.split(",")[0].trim()
+          : req.headers["x-real-ip"] || req.socket?.remoteAddress || "";
+      const ipHash = rawIp
+        ? `ip:${createHash("sha256").update(String(rawIp)).digest("hex").slice(0, 16)}`
+        : null;
+      res.json(await registerVisitorSession(sessionId, ipHash));
     } catch (error) {
       console.error("Visitor counter update error:", error);
       res.status(500).json({ error: "방문자 수를 기록하지 못했습니다." });

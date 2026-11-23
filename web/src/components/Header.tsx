@@ -36,15 +36,24 @@ export function Header() {
   useEffect(() => {
     const registerVisit = async () => {
       try {
-        let sessionId = sessionStorage.getItem("portfolio-visitor-session");
-        if (!sessionId) {
-          sessionId = crypto.randomUUID();
-          sessionStorage.setItem("portfolio-visitor-session", sessionId);
+        let visitorId: string | null = null;
+        try {
+          visitorId = localStorage.getItem("portfolio-visitor-id");
+          if (!visitorId) {
+            visitorId = crypto.randomUUID();
+            localStorage.setItem("portfolio-visitor-id", visitorId);
+          }
+        } catch {
+          visitorId = sessionStorage.getItem("portfolio-visitor-session");
+          if (!visitorId) {
+            visitorId = crypto.randomUUID();
+            sessionStorage.setItem("portfolio-visitor-session", visitorId);
+          }
         }
         const response = await fetch("/api/visitors", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sessionId }),
+          body: JSON.stringify({ sessionId: visitorId }),
         });
         if (!response.ok) return;
         const data = await response.json();
