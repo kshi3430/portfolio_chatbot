@@ -76,7 +76,7 @@ const COMMON_GUARDRAILS = `공통 필수 규칙:
 - 핵심 요약 1문장
 3. 소제목 (트러블슈팅)
 - 문제와 해결·성과를 합친 핵심 요약 1~2문장
-중요: 참고 문서의 모든 문장을 그대로 베껴 적지 마세요. 각 번호 항목 아래의 하위 불릿(- )은 반드시 1~2개(각 1문장)로만 압축해 전체 답변이 한눈에 읽히도록 짧게 요약하세요. 반면 이름·학력·팀원·단일 사실처럼 간단한 질문에는 번호 목록 없이 1~2문장으로 바로 답하세요.
+중요: 참고 문서의 모든 문장을 그대로 베껴 적지 마세요. 각 번호 항목 아래의 하위 불릿(- )은 반드시 1~2개(각 1문장)로만 압축해 전체 답변이 한눈에 읽히도록 짧게 요약하세요. 질문에서 묻지 않은 섹션이나 '해당 내용을 찾을 수 없습니다' 문구를 끝에 덧붙이지 마세요. 반면 이름·학력·팀원·단일 사실처럼 간단한 질문에는 번호 목록 없이 1~2문장으로 바로 답하세요.
 9. 마지막에 불필요한 홍보 문구나 이메일 안내를 붙이지 마세요.`;
 
 const INTENT_SYSTEM_PROMPTS: Record<string, string> = {
@@ -122,6 +122,22 @@ const DOC_ID_TO_CARD_TITLE: Record<string, string> = {
   "jichini-development-backend-api": "Backend Framework",
   "jichini-troubleshooting-optimization": "모호한 고민 구체화와 판단 호출 줄이기",
   "jichini-troubleshooting-search-method": "유사 사용자 검색 방식 개선",
+};
+
+const CARD_SPECIFIC_CUES: Record<string, string[]> = {
+  "capteam-development-dataset": ["설문", "데이터셋", "dataset", "데이터 구조"],
+  "capteam-development-structured-output": ["pydantic", "structured", "구조화", "형식 고정"],
+  "capteam-development-langgraph-workflow": ["워크플로", "workflow", "langgraph", "reflection", "보정"],
+  "capteam-development-backend": ["fastapi", "백엔드", "backend", "api", "json", "관리자"],
+  "capteam-troubleshooting-randomness": ["랜덤", "과대평가", "temperature", "일관성", "점수 상한"],
+  "capteam-troubleshooting-loop": ["루프", "반복", "최대 횟수", "필수 오류", "참고 경고", "fallback", "규칙 기반"],
+  "capteam-troubleshooting-context-performance": ["컨텍스트", "병렬", "worker", "batch", "514", "179", "2.87", "속도", "처리 시간"],
+  "jichini-development-jev-langgraph": ["jev", "분기", "의도", "hitl", "확인 질문"],
+  "jichini-development-rag-vector-db": ["매칭", "유사 사용자", "pgvector", "비식별", "ner", "koelectra", "코사인", "임베딩"],
+  "jichini-development-persistent-memory": ["메모리", "영속", "advisory", "lock", "락", "5,000", "5000", "압축", "장기 보관", "30개", "복귀"],
+  "jichini-development-backend-api": ["백엔드", "backend", "api", "fastapi", "회원가입", "탈퇴", "트랜잭션", "파기"],
+  "jichini-troubleshooting-optimization": ["모호", "구체성", "구체화", "호출 줄이기", "p95", "3,212", "1,784", "44.4", "28.9", "비용"],
+  "jichini-troubleshooting-search-method": ["검색 방식", "정확도", "rrf", "bm25", "리랭커", "reranker", "cross-encoder", "헛매칭", "84.6", "96.2", "11.6"],
 };
 
 const SECTION_TO_MODAL: Record<string, [string, string]> = {
@@ -990,7 +1006,36 @@ function resolveNavigation(
     "modal-overview",
     "개요 & 동기",
   ];
-  const highlightText = DOC_ID_TO_CARD_TITLE[bestDoc.id] || null;
+
+  let highlightText: string | null = null;
+  if (
+    bestDoc.section === "development" ||
+    bestDoc.section === "troubleshooting" ||
+    bestDoc.section === "troubleshooting_summary"
+  ) {
+    let bestCardId: string | null = null;
+    let bestHits = 0;
+    for (const [cid, cues] of Object.entries(CARD_SPECIFIC_CUES)) {
+      if (!cid.startsWith(`${uiProjectId}-`)) continue;
+      if (bestDoc.section === "development" && !cid.includes("-development-")) continue;
+      if (
+        (bestDoc.section === "troubleshooting" ||
+          bestDoc.section === "troubleshooting_summary") &&
+        !cid.includes("-troubleshooting-")
+      ) {
+        continue;
+      }
+      const hits = cues.filter((cue) => q.includes(cue)).length;
+      if (hits > bestHits) {
+        bestHits = hits;
+        bestCardId = cid;
+      }
+    }
+    if (bestCardId && bestHits > 0) {
+      highlightText = DOC_ID_TO_CARD_TITLE[bestCardId] || null;
+    }
+  }
+
   const projectLabel = uiProjectId === "capteam" ? "CapTeam" : "JICHINI";
 
   return {
@@ -1158,7 +1203,7 @@ ${context}
 
 질문: ${message}
 
-위 질문에서 직접 물어본 내용만 선별해 길게 늘어놓지 말고 간결하게 요약해 답하세요. 마크다운 굵게(**텍스트**)는 절대 사용하지 마세요.
+위 질문에서 직접 물어본 내용만 선별해 길게 늘어놓지 말고 간결하게 요약해 답하세요. 마크다운 굵게(**텍스트**)는 절대 사용하지 마세요. 묻지 않은 섹션이나 '해당 내용을 찾을 수 없습니다' 문구를 끝에 덧붙이지 마세요.
 답변:`;
       messages = [
         { role: "system", content: systemPrompt },

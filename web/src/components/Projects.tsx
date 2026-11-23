@@ -419,7 +419,11 @@ export function Projects({
                               data-nav-card={item.title}
                               className={`modal-card rounded-2xl p-6 flex flex-col gap-4 transition-all duration-300 ${
                                 spanFull ? "md:col-span-2" : ""
-                              } ${highlightedCard === item.title ? "nav-highlight-glow" : ""}`}
+                              } ${
+                                highlightedCard === item.title || highlightedSection === "modal-build"
+                                  ? "nav-highlight-glow"
+                                  : ""
+                              }`}
                             >
                               <div className="flex items-center gap-3 pb-3 border-b border-on-surface/10">
                                 <span className="font-mono text-xs font-semibold text-primary-emerald bg-primary-emerald/10 border border-primary-emerald/25 rounded-lg px-2.5 py-1">

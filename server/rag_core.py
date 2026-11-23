@@ -1805,6 +1805,22 @@ JSON 스키마:
         "jichini-troubleshooting-search-method": "유사 사용자 검색 방식 개선",
     }
 
+    _CARD_SPECIFIC_CUES = {
+        "capteam-development-dataset": ("설문", "데이터셋", "dataset", "데이터 구조"),
+        "capteam-development-structured-output": ("pydantic", "structured", "구조화", "형식 고정"),
+        "capteam-development-langgraph-workflow": ("워크플로", "workflow", "langgraph", "reflection", "보정"),
+        "capteam-development-backend": ("fastapi", "백엔드", "backend", "api", "json", "관리자"),
+        "capteam-troubleshooting-randomness": ("랜덤", "과대평가", "temperature", "일관성", "점수 상한"),
+        "capteam-troubleshooting-loop": ("루프", "반복", "최대 횟수", "필수 오류", "참고 경고", "fallback", "규칙 기반"),
+        "capteam-troubleshooting-context-performance": ("컨텍스트", "병렬", "worker", "batch", "514", "179", "2.87", "속도", "처리 시간"),
+        "jichini-development-jev-langgraph": ("jev", "분기", "의도", "hitl", "확인 질문"),
+        "jichini-development-rag-vector-db": ("매칭", "유사 사용자", "pgvector", "비식별", "ner", "koelectra", "코사인", "임베딩"),
+        "jichini-development-persistent-memory": ("메모리", "영속", "advisory", "lock", "락", "5,000", "5000", "압축", "장기 보관", "30개", "복귀"),
+        "jichini-development-backend-api": ("백엔드", "backend", "api", "fastapi", "회원가입", "탈퇴", "트랜잭션", "파기"),
+        "jichini-troubleshooting-optimization": ("모호", "구체성", "구체화", "호출 줄이기", "p95", "3,212", "1,784", "44.4", "28.9", "비용"),
+        "jichini-troubleshooting-search-method": ("검색 방식", "정확도", "rrf", "bm25", "리랭커", "reranker", "cross-encoder", "헛매칭", "84.6", "96.2", "11.6"),
+    }
+
     def _resolve_navigation(
         self,
         intent: IntentType,
@@ -1921,7 +1937,28 @@ JSON 스키마:
         modal_section, modal_label = self._SECTION_TO_MODAL.get(
             doc_section, ("modal-overview", "개요 & 동기")
         )
-        highlight_text = self._DOC_ID_TO_CARD_TITLE.get(doc_id)
+
+        # 질문에 특정 하위 카드의 고유 키워드가 명시된 경우에만 단일 카드를 강조하고,
+        # "개발내용 알려줘", "트러블슈팅 알려줘"처럼 섹션 전체를 묻는 경우 highlightText를 None으로 두어
+        # 해당 섹션의 모든 카드가 함께 강조되도록 합니다.
+        highlight_text: Optional[str] = None
+        if doc_section in ("development", "troubleshooting", "troubleshooting_summary"):
+            best_card_doc_id: Optional[str] = None
+            best_cue_hits = 0
+            for cid, cues in self._CARD_SPECIFIC_CUES.items():
+                if not cid.startswith(f"{ui_project_id}-"):
+                    continue
+                if doc_section == "development" and "-development-" not in cid:
+                    continue
+                if doc_section in ("troubleshooting", "troubleshooting_summary") and "-troubleshooting-" not in cid:
+                    continue
+                hits = sum(1 for cue in cues if cue in q_lower)
+                if hits > best_cue_hits:
+                    best_cue_hits = hits
+                    best_card_doc_id = cid
+            if best_card_doc_id and best_cue_hits > 0:
+                highlight_text = self._DOC_ID_TO_CARD_TITLE.get(best_card_doc_id)
+
         project_label = self._PROJECT_UI_LABELS.get(ui_project_id, ui_project_id)
 
         return {
