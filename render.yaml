@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: portfolio-chatbot-rag-api
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn server.api:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: UPSTAGE_API_KEY
+        sync: false
+      - key: TYPESAFE_API_KEY
+        sync: false
+      - key: UPSTAGE_MODEL
+        value: solar-pro4
+      - key: UPSTAGE_EMBEDDING_PASSAGE_MODEL
+        value: solar-embedding-2-passage
+      - key: UPSTAGE_EMBEDDING_QUERY_MODEL
+        value: solar-embedding-2-query
+      - key: TYPESAFE_DEFAULT_MODEL
+        value: jev-latest

@@ -44,3 +44,4 @@ README_tmp.html
 *.avi
 .vercel
 .env*
+.python-version

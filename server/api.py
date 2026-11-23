@@ -188,9 +188,10 @@ async def chat_stream(request: ChatRequest):
 if __name__ == "__main__":
     import uvicorn
 
+    port = int(os.getenv("PORT", "8001"))
     uvicorn.run(
-        "api:app",
+        "server.api:app",
         host="0.0.0.0",
-        port=8001,
-        reload=True,
+        port=port,
+        reload=False,
     )
