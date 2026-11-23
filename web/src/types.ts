@@ -1,8 +1,25 @@
+export interface PortfolioNavigation {
+  section: "projects" | "skills" | "about";
+  projectId?: "capteam" | "jichini" | null;
+  modalSection?: "modal-overview" | "modal-build" | "modal-troubleshooting" | "modal-learned" | null;
+  highlightText?: string | null;
+  label?: string;
+}
+
+export interface ChatSource {
+  title: string;
+  content_preview: string;
+  category?: string;
+}
+
 export interface ChatMessage {
   id: string;
   role: "user" | "model";
   text: string;
   timestamp: Date;
+  navLabel?: string;
+  navigation?: PortfolioNavigation;
+  sources?: ChatSource[];
 }
 
 export interface Project {

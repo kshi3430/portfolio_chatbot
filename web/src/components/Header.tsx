@@ -12,14 +12,14 @@ export function Header() {
 
   useEffect(() => {
     const updateClock = () => {
-      const seoulTime = new Intl.DateTimeFormat("en-US", {
+      const koreaTime = new Intl.DateTimeFormat("en-US", {
         timeZone: "Asia/Seoul",
         hour: "2-digit",
         minute: "2-digit",
         second: "2-digit",
         hour12: false,
       }).format(new Date());
-      setCurrentTime(seoulTime);
+      setCurrentTime(koreaTime);
     };
 
     updateClock();
@@ -59,7 +59,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-white/5 bg-void/80 backdrop-blur-md px-6 py-4">
-      <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
         {/* Logo and Role */}
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-surface-low border border-primary-emerald/30 flex items-center justify-center text-primary-emerald shadow-inner relative group overflow-hidden">
@@ -68,16 +68,13 @@ export function Header() {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="font-display font-bold tracking-wider text-lg text-on-surface">
+              <h1 className="font-display font-bold tracking-wider text-lg text-on-surface whitespace-nowrap">
                 KIM SEONGHYEON
               </h1>
-              <span className="text-[10px] bg-primary-emerald/15 text-primary-emerald font-mono px-1.5 py-0.5 rounded border border-primary-emerald/20">
+              <span className="text-[10px] bg-primary-emerald/15 text-primary-emerald font-mono px-1.5 py-0.5 rounded border border-primary-emerald/20 whitespace-nowrap">
                 AI ENGINEER
               </span>
             </div>
-            <p className="font-mono text-xs text-on-surface-variant tracking-widest">
-              RAG · LANGGRAPH · PYTORCH
-            </p>
           </div>
         </div>
 
@@ -96,7 +93,7 @@ export function Header() {
           {/* Local Time */}
           <div className="flex items-center gap-1.5 bg-surface-low/50 px-2.5 py-1.5 rounded-md border border-white/5">
             <Clock className="w-3.5 h-3.5 text-primary-emerald" />
-            <span>SEOUL {currentTime || "00:00:00"}</span>
+            <span>KOREA {currentTime || "00:00:00"}</span>
           </div>
 
           {/* Visitor Count */}

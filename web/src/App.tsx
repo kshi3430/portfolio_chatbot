@@ -1,16 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Header } from "./components/Header";
 import { Hero } from "./components/Hero";
 import { Projects } from "./components/Projects";
 import { Experience } from "./components/Experience";
 import { Skills } from "./components/Skills";
 import { ChatPanel } from "./components/ChatPanel";
+import { PortfolioNavigation } from "./types";
 import { Bot, Terminal, X } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
 export default function App() {
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [hasOpenedChat, setHasOpenedChat] = useState(false);
   const [showTooltip, setShowTooltip] = useState(true);
+  const [activeNav, setActiveNav] = useState<{ nav: PortfolioNavigation; nonce: number } | null>(null);
+  const highlightTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     // Automatically fade out the tooltip after 8 seconds if not interacted with
@@ -20,8 +24,40 @@ export default function App() {
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (highlightTimerRef.current) {
+        window.clearTimeout(highlightTimerRef.current);
+      }
+    };
+  }, []);
+
+  const handleChatNavigate = (nav: PortfolioNavigation) => {
+    const nonce = Date.now();
+    setActiveNav({ nav, nonce });
+
+    let targetEl: HTMLElement | null = null;
+    if (nav.highlightText && nav.section !== "projects") {
+      targetEl = document.querySelector<HTMLElement>(
+        `[data-nav-section="${CSS.escape(nav.section)}"][data-nav-target="${CSS.escape(nav.highlightText)}"]`
+      );
+    }
+    if (!targetEl) {
+      targetEl = document.getElementById(nav.section);
+    }
+
+    targetEl?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    if (highlightTimerRef.current) {
+      window.clearTimeout(highlightTimerRef.current);
+    }
+    highlightTimerRef.current = window.setTimeout(() => {
+      setActiveNav((current) => (current?.nonce === nonce ? null : current));
+    }, 4500);
+  };
+
   return (
-    <div className="min-h-screen bg-void text-on-surface relative pb-20 selection:bg-primary-emerald/30 selection:text-white">
+    <div className="min-h-screen bg-void text-on-surface relative pb-32 selection:bg-primary-emerald/30 selection:text-white">
       {/* Absolute graphic elements */}
       <div className="noise-overlay" />
       <div className="atmospheric-glow top-1/4 left-10 w-[500px] h-[500px]" />
@@ -30,18 +66,43 @@ export default function App() {
       {/* Navigation Header */}
       <Header />
 
-      <main className="max-w-5xl mx-auto px-6 mt-6 relative z-10">
-        {/* Full-width clean single stack layout for the portfolio sections */}
-        <div className="space-y-12 md:space-y-20">
-          <Hero />
-          <Projects />
-          <Experience />
-          <Skills />
-        </div>
-      </main>
+      <div className={`transition-[padding] duration-300 ease-out ${isChatOpen ? "lg:pr-[472px]" : ""}`}>
+        <main className="@container max-w-5xl mx-auto px-6 sm:px-10 mt-12 md:mt-16 relative z-10">
+          {/* Full-width clean single stack layout for the portfolio sections */}
+          <div>
+            <Hero />
+            <Skills navigation={activeNav} />
+            <Projects navigation={activeNav} isChatOpen={isChatOpen} />
+            <Experience navigation={activeNav} />
+          </div>
+        </main>
+
+        {/* Footer */}
+        <footer id="contact" className="border-t border-white/5 mt-24 pt-16 pb-12 bg-void/50 backdrop-blur scroll-mt-24">
+          <div className="max-w-5xl mx-auto px-6 sm:px-10">
+            <div className="glass-card rounded-3xl p-8 md:p-12 mb-10 flex flex-col md:flex-row md:items-end justify-between gap-8">
+              <div>
+                <div className="font-mono text-xs text-primary-emerald tracking-widest mb-4">LET'S CONNECT</div>
+                <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">함께 해결할 문제가 있나요?</h2>
+                <p className="text-on-surface-variant max-w-xl">작은 이야기라도 언제든 편하게 연락해 주세요.</p>
+              </div>
+              <a href="mailto:kshi3430@gmail.com" className="shrink-0 bg-primary-emerald text-void font-semibold px-6 py-3 rounded-xl hover:bg-primary-glow transition-colors">이메일 보내기</a>
+            </div>
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-xs text-on-surface-variant/50">
+            <div>
+              © 2026 Kim Seonghyeon. All rights reserved.
+            </div>
+            <div className="flex items-center gap-1">
+              <Terminal className="w-3.5 h-3.5 text-primary-emerald" />
+              <span>AI_ENGINEER_PORTFOLIO</span>
+            </div>
+            </div>
+          </div>
+        </footer>
+      </div>
 
       {/* Floating Chat Trigger & Panel */}
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3 pointer-events-none">
+      <div className="fixed bottom-6 right-6 z-[120] flex flex-col items-end gap-3 pointer-events-none">
         {/* Tooltip */}
         <AnimatePresence>
           {showTooltip && !isChatOpen && (
@@ -73,7 +134,9 @@ export default function App() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => {
-            setIsChatOpen(!isChatOpen);
+            const nextOpen = !isChatOpen;
+            setIsChatOpen(nextOpen);
+            if (nextOpen) setHasOpenedChat(true);
             setShowTooltip(false);
           }}
           className="pointer-events-auto w-14 h-14 rounded-full bg-primary-emerald hover:bg-primary-glow text-void flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.4)] hover:shadow-[0_0_40px_rgba(16,185,129,0.6)] border border-primary-glow/30 transition-all duration-300 relative group cursor-pointer"
@@ -81,7 +144,9 @@ export default function App() {
         >
           <div className="absolute inset-0 rounded-full bg-primary-emerald/20 animate-ping opacity-75 pointer-events-none" />
           <Bot className="w-6 h-6 relative z-10 transition-transform duration-500 group-hover:rotate-12" />
-          <span className="absolute top-0.5 right-0.5 w-3.5 h-3.5 bg-red-500 border-2 border-void rounded-full animate-pulse" />
+          {!hasOpenedChat && (
+            <span className="absolute top-0.5 right-0.5 w-3.5 h-3.5 bg-red-500 border-2 border-void rounded-full animate-pulse" />
+          )}
         </motion.button>
       </div>
 
@@ -93,35 +158,12 @@ export default function App() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 50, scale: 0.95 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="fixed bottom-24 right-6 w-[400px] max-w-[calc(100vw-32px)] h-[600px] max-h-[80vh] z-50 flex flex-col shadow-2xl"
+            className="fixed bottom-24 right-6 w-[440px] max-w-[calc(100vw-32px)] h-[600px] max-h-[80vh] z-[120] flex flex-col shadow-2xl"
           >
-            <ChatPanel onClose={() => setIsChatOpen(false)} />
+            <ChatPanel onClose={() => setIsChatOpen(false)} onNavigate={handleChatNavigate} />
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Footer */}
-      <footer id="contact" className="border-t border-white/5 mt-20 pt-16 pb-12 bg-void/50 backdrop-blur scroll-mt-24">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="glass-card rounded-3xl p-8 md:p-12 mb-10 flex flex-col md:flex-row md:items-end justify-between gap-8">
-            <div>
-              <div className="font-mono text-xs text-primary-emerald tracking-widest mb-4">LET'S CONNECT</div>
-              <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">함께 해결할 문제가 있나요?</h2>
-              <p className="text-on-surface-variant max-w-xl">AI에 대한 이야기라면 언제든 편하게 연락해주세요.</p>
-            </div>
-            <a href="mailto:kshi3430@gmail.com" className="shrink-0 bg-primary-emerald text-void font-semibold px-6 py-3 rounded-xl hover:bg-primary-glow transition-colors">이메일 보내기</a>
-          </div>
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-xs text-on-surface-variant/50">
-          <div>
-            © 2026 Kim Seonghyeon. All rights reserved.
-          </div>
-          <div className="flex items-center gap-1">
-            <Terminal className="w-3.5 h-3.5 text-primary-emerald" />
-            <span>AI_ENGINEER_PORTFOLIO</span>
-          </div>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

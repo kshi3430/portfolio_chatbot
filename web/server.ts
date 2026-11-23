@@ -95,8 +95,10 @@ async function startServer() {
             }))
         : [];
 
+      const wantsStream = req.body?.stream === true;
       const ragApiUrl = process.env.RAG_API_URL || "http://127.0.0.1:8001";
-      const ragResponse = await fetch(`${ragApiUrl.replace(/\/$/, "")}/chat`, {
+      const targetEndpoint = wantsStream ? "/chat/stream" : "/chat";
+      const ragResponse = await fetch(`${ragApiUrl.replace(/\/$/, "")}${targetEndpoint}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -107,12 +109,33 @@ async function startServer() {
         }),
       });
 
-      const data = await ragResponse.json().catch(() => null);
       if (!ragResponse.ok) {
+        const data = await ragResponse.json().catch(() => null);
         const detail = data?.detail || data?.error || "RAG API request failed";
         return res.status(ragResponse.status).json({ error: detail });
       }
 
+      if (wantsStream) {
+        res.status(200);
+        res.setHeader("Content-Type", "text/event-stream; charset=utf-8");
+        res.setHeader("Cache-Control", "no-cache, no-transform");
+        res.setHeader("Connection", "keep-alive");
+        res.setHeader("X-Accel-Buffering", "no");
+        if (typeof res.flushHeaders === "function") res.flushHeaders();
+
+        const reader = ragResponse.body?.getReader();
+        if (!reader) {
+          return res.end();
+        }
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          res.write(Buffer.from(value));
+        }
+        return res.end();
+      }
+
+      const data = await ragResponse.json().catch(() => null);
       res.json({
         text: data?.answer || "답변을 가져오는 도중 문제가 발생했습니다.",
         sources: data?.sources || [],

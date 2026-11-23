@@ -1,0 +1,204 @@
+{
+  "personal": [
+    {
+      "id": "personal-hobby-sports",
+      "content": "김성현의 취미는 운동이며, 주로 축구와 헬스를 즐깁니다. 헬스에서는 벤치프레스 85kg을 든 적이 있고, 축구에서는 시대회 우승 경력이 있습니다.",
+      "metadata": {
+        "document_type": "personal",
+        "section": "personal",
+        "topic": "hobby_sports",
+        "keywords": ["취미", "운동", "축구", "시대회", "우승", "헬스", "벤치프레스", "85kg"]
+      }
+    },
+    {
+      "id": "personal-hobby-game",
+      "content": "김성현은 PC방에 자주 가며, PC방에 가면 주로 피파(FIFA)만 플레이합니다.",
+      "metadata": {
+        "document_type": "personal",
+        "section": "personal",
+        "topic": "hobby_game",
+        "keywords": ["취미", "PC방", "피시방", "게임", "피파", "FIFA"]
+      }
+    },
+    {
+      "id": "personal-music-genre",
+      "content": "김성현이 좋아하는 음악 장르는 발라드입니다.",
+      "metadata": {
+        "document_type": "personal",
+        "section": "personal",
+        "topic": "music_genre",
+        "keywords": ["음악", "노래", "장르", "발라드"]
+      }
+    },
+    {
+      "id": "personal-music-recommendation",
+      "content": "김성현이 추천하는 노래는 나윤권의 '나였으면'입니다.",
+      "metadata": {
+        "document_type": "personal",
+        "section": "personal",
+        "topic": "music_recommendation",
+        "keywords": ["노래 추천", "추천곡", "나윤권", "나였으면", "음악"]
+      }
+    },
+    {
+      "id": "personal-movie",
+      "content": "김성현이 좋아하는 영화는 '건축학개론'입니다.",
+      "metadata": {
+        "document_type": "personal",
+        "section": "personal",
+        "topic": "movie",
+        "keywords": ["영화", "인생영화", "건축학개론"]
+      }
+    },
+    {
+      "id": "personal-mbti",
+      "content": "김성현의 MBTI는 INFJ입니다.",
+      "metadata": {
+        "document_type": "personal",
+        "section": "personal",
+        "topic": "mbti",
+        "keywords": ["MBTI", "성격", "INFJ"]
+      }
+    },
+    {
+      "id": "personal-favorite-drink",
+      "content": "김성현이 좋아하는 음료수는 천연사이다입니다.",
+      "metadata": {
+        "document_type": "personal",
+        "section": "personal",
+        "topic": "drink",
+        "keywords": ["음료", "음료수", "좋아하는 것", "천연사이다"]
+      }
+    },
+    {
+      "id": "personal-height",
+      "content": "김성현의 키는 178cm입니다.",
+      "metadata": {
+        "document_type": "personal",
+        "section": "personal",
+        "topic": "height",
+        "keywords": ["키", "신장", "178"]
+      }
+    },
+    {
+      "id": "personal-favorite-country",
+      "content": "김성현이 좋아하는 나라는 일본입니다.",
+      "metadata": {
+        "document_type": "personal",
+        "section": "personal",
+        "topic": "favorite_country",
+        "keywords": ["좋아하는 나라", "여행", "일본"]
+      }
+    },
+    {
+      "id": "personal-bucketlist-country",
+      "content": "김성현이 가보고 싶은 나라는 아이슬란드입니다.",
+      "metadata": {
+        "document_type": "personal",
+        "section": "personal",
+        "topic": "bucketlist_country",
+        "keywords": ["가보고 싶은 나라", "여행", "버킷리스트", "아이슬란드"]
+      }
+    },
+    {
+      "id": "personal-favorite-season",
+      "content": "김성현이 좋아하는 계절은 여름과 겨울입니다.",
+      "metadata": {
+        "document_type": "personal",
+        "section": "personal",
+        "topic": "favorite_season",
+        "keywords": ["계절", "좋아하는 계절", "여름", "겨울"]
+      }
+    },
+    {
+      "id": "personal-favorite-color",
+      "content": "김성현이 좋아하는 색은 초록색입니다.",
+      "metadata": {
+        "document_type": "personal",
+        "section": "personal",
+        "topic": "favorite_color",
+        "keywords": ["색", "색깔", "컬러", "좋아하는 색", "초록색"]
+      }
+    },
+    {
+      "id": "personal-favorite-manga",
+      "content": "김성현이 좋아하는 만화는 '원피스'입니다.",
+      "metadata": {
+        "document_type": "personal",
+        "section": "personal",
+        "topic": "favorite_manga",
+        "keywords": ["만화", "애니", "웹툰", "좋아하는 만화", "원피스"]
+      }
+    },
+    {
+      "id": "personal-favorite-snack",
+      "content": "김성현이 좋아하는 간식은 '눈을감자'입니다.",
+      "metadata": {
+        "document_type": "personal",
+        "section": "personal",
+        "topic": "favorite_snack",
+        "keywords": ["간식", "과자", "좋아하는 간식", "눈을감자"]
+      }
+    },
+    {
+      "id": "personal-football-viewing",
+      "content": "김성현은 특정 응원팀은 없지만 주로 프리미어리그를 시청하며, 라리가는 이강인 선수 때문에 AT 마드리드(아틀레티코 마드리드) 경기만 챙겨 봅니다.",
+      "metadata": {
+        "document_type": "personal",
+        "section": "personal",
+        "topic": "football_viewing",
+        "keywords": ["축구", "해외축구", "응원팀", "프리미어리그", "EPL", "라리가", "이강인", "AT마드리드", "아틀레티코 마드리드"]
+      }
+    },
+    {
+      "id": "personal-hometown",
+      "content": "김성현의 고향(출신 지역)은 경상북도 경산시입니다.",
+      "metadata": {
+        "document_type": "personal",
+        "section": "personal",
+        "topic": "hometown",
+        "keywords": ["고향", "출신", "사는 곳", "지역", "경산", "경산시"]
+      }
+    },
+    {
+      "id": "personal-blood-type",
+      "content": "김성현의 혈액형은 A형입니다.",
+      "metadata": {
+        "document_type": "personal",
+        "section": "personal",
+        "topic": "blood_type",
+        "keywords": ["혈액형", "A형"]
+      }
+    },
+    {
+      "id": "personal-favorite-fruit",
+      "content": "김성현이 좋아하는 과일은 포도와 블루베리입니다.",
+      "metadata": {
+        "document_type": "personal",
+        "section": "personal",
+        "topic": "favorite_fruit",
+        "keywords": ["과일", "좋아하는 과일", "포도", "블루베리"]
+      }
+    },
+    {
+      "id": "personal-siblings",
+      "content": "김성현은 형 한 명과 동생 한 명이 있는 삼남매(또는 삼형제) 중 둘째입니다.",
+      "metadata": {
+        "document_type": "personal",
+        "section": "personal",
+        "topic": "siblings",
+        "keywords": ["가족", "형제", "형", "동생", "둘째", "형제관계"]
+      }
+    },
+    {
+      "id": "personal-favorite-animal",
+      "content": "김성현이 좋아하는 동물은 강아지와 고양이입니다.",
+      "metadata": {
+        "document_type": "personal",
+        "section": "personal",
+        "topic": "favorite_animal",
+        "keywords": ["동물", "반려동물", "강아지", "고양이", "좋아하는 동물"]
+      }
+    }
+  ]
+}

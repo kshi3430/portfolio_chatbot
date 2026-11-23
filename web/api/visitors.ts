@@ -1,6 +1,6 @@
-const fallbackCount = Number(process.env.VISITOR_COUNT || 717);
+const fallbackCount = Number(process.env.VISITOR_COUNT || 738);
 const sessions = new Set<string>();
-let count = Number.isFinite(fallbackCount) ? fallbackCount : 717;
+let count = Number.isFinite(fallbackCount) ? fallbackCount : 738;
 
 export default async function handler(req: any, res: any) {
   if (req.method === "GET") {

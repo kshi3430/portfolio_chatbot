@@ -12,6 +12,7 @@ Usage:
 """
 
 import json
+import shutil
 from pathlib import Path
 from typing import Any
 
@@ -26,6 +27,8 @@ def build_projects_json():
     projects_dir = data_dir / "projects"
     output_file = data_dir / "projects.json"
     web_output_file = root_dir / "web" / "data" / "projects.json"
+    personal_file = data_dir / "personal.json"
+    web_personal_file = root_dir / "web" / "data" / "personal.json"
 
     if not projects_dir.exists():
         print(f"❌ Error: {projects_dir} 디렉토리가 없습니다.")
@@ -80,6 +83,9 @@ def build_projects_json():
         web_output_file.parent.mkdir(parents=True, exist_ok=True)
         with open(web_output_file, "w", encoding="utf-8") as f:
             json.dump(portfolio_data, f, ensure_ascii=False, indent=2)
+
+        if personal_file.exists():
+            shutil.copyfile(personal_file, web_personal_file)
 
         print(f"\n🎉 성공! {output_file.name} 파일이 생성되었습니다.")
         print(f"   원본 파일: {source_path}")
