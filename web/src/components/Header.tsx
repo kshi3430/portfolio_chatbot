@@ -34,43 +34,41 @@ export function Header() {
   }, [theme]);
 
   useEffect(() => {
+    const createVisitorId = (): string => {
+      if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+        return crypto.randomUUID();
+      }
+      return `v-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`;
+    };
+
     const registerVisit = async () => {
       try {
         let visitorId: string | null = null;
-        let alreadyCountedInBrowser = false;
         try {
           visitorId = localStorage.getItem("portfolio-visitor-id");
-          alreadyCountedInBrowser = localStorage.getItem("portfolio-visitor-counted") === "1";
           if (!visitorId) {
-            visitorId = crypto.randomUUID();
+            visitorId = createVisitorId();
             localStorage.setItem("portfolio-visitor-id", visitorId);
           }
         } catch {
           visitorId = sessionStorage.getItem("portfolio-visitor-session");
-          alreadyCountedInBrowser = sessionStorage.getItem("portfolio-visitor-counted") === "1";
           if (!visitorId) {
-            visitorId = crypto.randomUUID();
+            visitorId = createVisitorId();
             sessionStorage.setItem("portfolio-visitor-session", visitorId);
           }
         }
 
-        const response = alreadyCountedInBrowser
-          ? await fetch("/api/visitors", { method: "GET" })
-          : await fetch("/api/visitors", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ sessionId: visitorId }),
-            });
+        const response = await fetch("/api/visitors", {
+          method: "POST",
+          cache: "no-store",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sessionId: visitorId }),
+        });
         if (!response.ok) return;
         const data = await response.json();
-        if (!alreadyCountedInBrowser) {
-          try {
-            localStorage.setItem("portfolio-visitor-counted", "1");
-          } catch {
-            sessionStorage.setItem("portfolio-visitor-counted", "1");
-          }
+        if (typeof data?.count === "number" && Number.isFinite(data.count)) {
+          setVisitorCount(data.count);
         }
-        setVisitorCount(data.count);
       } catch {
         // 방문자 집계 실패가 포트폴리오 이용을 방해하지 않도록 조용히 무시합니다.
       }

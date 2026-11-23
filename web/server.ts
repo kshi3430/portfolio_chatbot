@@ -59,6 +59,7 @@ async function startServer() {
 
   app.get("/api/visitors", async (_req, res) => {
     try {
+      res.setHeader("Cache-Control", "no-store, max-age=0");
       res.json({ count: (await readVisitorData()).count });
     } catch (error) {
       console.error("Visitor counter read error:", error);
@@ -68,6 +69,7 @@ async function startServer() {
 
   app.post("/api/visitors", async (req, res) => {
     try {
+      res.setHeader("Cache-Control", "no-store, max-age=0");
       const sessionId = req.body?.sessionId;
       if (typeof sessionId !== "string" || sessionId.length < 8 || sessionId.length > 100) {
         return res.status(400).json({ error: "유효한 방문 세션 ID가 필요합니다." });
