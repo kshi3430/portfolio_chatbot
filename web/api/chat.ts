@@ -672,6 +672,25 @@ function classifyQuery(
     return { intent: "career_profile", targetProject: "none", uiTarget: "none" };
   }
 
+  const asksSiteFeatures = [
+    "포폴 기능",
+    "포트폴리오 기능",
+    "이 포폴",
+    "이 포트폴리오",
+    "웹사이트 기능",
+    "사이트 기능",
+    "다크모드",
+    "다크 모드",
+    "라이트모드",
+    "방문자",
+    "visitors",
+    "챗봇 기능",
+    "테마 전환",
+  ].some((k) => q.includes(k));
+  if (asksSiteFeatures) {
+    return { intent: "career_profile", targetProject: "none", uiTarget: "none" };
+  }
+
   // 프로젝트가 명시되지 않았을 때 직전 대화에서 프로젝트 맥락 추론
   if (targetProject === "none" && history.length > 0) {
     const recentText = history
@@ -773,6 +792,25 @@ function metadataBoost(
 ): number {
   let boost = 0;
   const q = question.toLowerCase();
+
+  const asksSiteFeatures = [
+    "포폴 기능",
+    "포트폴리오 기능",
+    "이 포폴",
+    "이 포트폴리오",
+    "웹사이트 기능",
+    "사이트 기능",
+    "다크모드",
+    "다크 모드",
+    "라이트모드",
+    "방문자",
+    "visitors",
+    "챗봇 기능",
+    "테마 전환",
+  ].some((k) => q.includes(k));
+  if (asksSiteFeatures && (doc.topic === "portfolio_features" || doc.documentType === "portfolio_site")) {
+    boost += 0.35;
+  }
 
   if (intent !== "personal_tmi") {
     if (uiTarget === "skills" && doc.documentType === "skill") {

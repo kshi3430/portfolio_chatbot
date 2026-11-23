@@ -84,6 +84,30 @@
         "topic": "study",
         "source_url": "https://east-flyingfish-9ab.notion.site/study-2df6299fe9ba803f8491d44348fa7a10?pvs=25"
       }
+    },
+    {
+      "id": "profile-portfolio-features",
+      "content": "이 포트폴리오 웹사이트에 구현된 주요 기능은 다음과 같습니다.\n1. AI 포트폴리오 챗봇 (Portfolio AI Assistant): TypeSafe Jev 의도 분류와 LangGraph, ChromaDB·Kiwi BM25 하이브리드 검색을 결합해 프로젝트·기술 스택·수상·개인 소개를 구분해 답변합니다. 실시간 SSE 스트리밍, 섹션 헤더(💡)와 클릭 가능한 번호형 토글 카드, 참고 문서 출처 토글을 제공합니다.\n2. 질문 연동 화면 자동 이동 및 하이라이트: 챗봇에 기술 스택, 수상 경력, 대외활동, 학력이나 특정 프로젝트 구현·트러블슈팅을 물으면 해당 섹션으로 자동 스크롤하거나 프로젝트 상세 모달을 열고 에메랄드 글로우 강조 표시를 띄웁니다.\n3. 다크 모드 / 라이트 모드 테마 전환: 상단 헤더 우측의 해/달 버튼으로 Emerald Nocturne 다크 테마와 라이트 테마를 즉시 전환할 수 있으며, 선택한 테마는 브라우저(localStorage)에 저장되고 OS 시스템 테마도 자동 감지합니다.\n4. 방문자 수(VISITORS) 1인 1회 집계 및 실시간 헤더 정보: 상단 헤더에 누적 방문자 수(localStorage 기반 방문자 ID와 서버 IP 해시 중복 방지로 1인 1회만 카운트), 실시간 한국 표준시(KOREA HH:MM:SS), 위치 배지(Gyeongbuk, KR), GitHub·이메일 바로가기를 제공합니다.\n5. 인터랙티브 프로젝트 상세 모달 (Project Deep Dive): CapTeam, JICHINI 프로젝트 카드를 클릭하면 01 개요 & 동기, 02 개발 내용, 03 문제와 해결(PROBLEM/SOLUTION/RESULT), 04 배운 점 탭으로 구성된 상세 모달을 볼 수 있습니다.",
+      "metadata": {
+        "document_type": "portfolio_site",
+        "section": "profile",
+        "topic": "portfolio_features",
+        "keywords": [
+          "포트폴리오 기능",
+          "포폴 기능",
+          "웹사이트 기능",
+          "사이트 기능",
+          "다크모드",
+          "라이트모드",
+          "방문자 수",
+          "VISITORS",
+          "챗봇 기능",
+          "화면 이동",
+          "하이라이트",
+          "상세 모달",
+          "실시간 시간"
+        ]
+      }
     }
   ],
   "awards": [

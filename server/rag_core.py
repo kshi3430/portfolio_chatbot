@@ -77,7 +77,7 @@ except ImportError:
     )
 
 
-RAG_INDEX_VERSION = "portfolio-json-v15-concise-overview"
+RAG_INDEX_VERSION = "portfolio-json-v16-portfolio-site-features"
 DEFAULT_UPSTAGE_BASE_URL = "https://api.upstage.ai/v1"
 DEFAULT_UPSTAGE_MODEL = "solar-pro4"
 DEFAULT_PASSAGE_EMBEDDING_MODEL = "solar-embedding-2-passage"
@@ -117,7 +117,8 @@ INTENT_SEED_KEYWORDS: Dict[str, str] = {
 
 # 포트폴리오 질문과 개인 TMI 질문을 엄격히 분리하기 위한 폴백용 키워드 (최후 안전망)
 PORTFOLIO_GUARD_KEYWORDS = (
-    "프로젝트", "포트폴리오", "지치니", "jichini", "캡팀", "capteam",
+    "프로젝트", "포트폴리오", "포폴", "웹사이트", "지치니", "jichini", "캡팀", "capteam",
+    "다크모드", "다크 모드", "라이트모드", "라이트 모드", "테마", "방문자", "visitors", "챗봇",
     "기술", "스택", "수상", "상장", "해커톤", "올림피아드", "koai",
     "학력", "학교", "소마고", "마이스터고", "전공", "동아리", "이메일", "연락처",
     "전화번호", "깃허브", "github", "노션", "notion", "이력", "역량",
@@ -1393,6 +1394,20 @@ JSON 스키마:
         doc_topic = meta.get("topic", "")
 
         boost = 0.0
+        q_lower = query.lower()
+        asks_site_features = any(
+            cue in q_lower
+            for cue in (
+                "포폴 기능", "포트폴리오 기능", "이 포폴", "이 포트폴리오",
+                "웹사이트 기능", "사이트 기능", "다크모드", "다크 모드",
+                "라이트모드", "방문자", "visitors", "챗봇 기능", "테마 전환",
+            )
+        )
+        if asks_site_features:
+            if doc_topic == "portfolio_features" or doc_type == "portfolio_site":
+                boost += 0.035
+            elif doc_category == "project":
+                boost -= 0.01
 
         if intent == "career_profile":
             if doc_category == "profile":
@@ -1834,6 +1849,10 @@ JSON 스키마:
             return None
 
         if ui_target == "none":
+            return None
+
+        top_doc_topic = str((docs[0].metadata or {}).get("topic") or "")
+        if top_doc_topic == "portfolio_features" and ui_target in ("projects_list", "project_detail"):
             return None
 
         if ui_target == "skills":
