@@ -269,10 +269,13 @@ class KiwiBM25Tokenizer:
 
     def __init__(self):
         self.kiwi = None
-        if os.getenv("USE_KIWI_TOKENIZER", "").strip() == "1":
+        if os.getenv("USE_KIWI_TOKENIZER", "1").strip() != "0":
             try:
                 from kiwipiepy import Kiwi  # type: ignore
 
+                # Render 무료 플랜(512MB RAM)에서 OOM이 발생하지 않도록
+                # 워커 스레드를 1개로 제한하고 불필요한 오타/대형 사전을 제외한 경량 cong 모델을 로드합니다.
+                # (기본 Kiwi() 642MB -> 경량 Kiwi 405MB)
                 self.kiwi = Kiwi(
                     num_workers=1,
                     load_default_dict=False,
@@ -280,7 +283,8 @@ class KiwiBM25Tokenizer:
                     load_multi_dict=False,
                     model_type="cong",
                 )
-            except Exception:
+            except Exception as e:
+                print(f"⚠️  Kiwi 로드 실패, 경량 토크나이저로 대체합니다: {e}")
                 self.kiwi = None
 
     def tokenize(self, text: str) -> List[str]:
