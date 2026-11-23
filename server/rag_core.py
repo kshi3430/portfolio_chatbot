@@ -126,6 +126,7 @@ PORTFOLIO_GUARD_KEYWORDS = (
     "rag", "langgraph", "langchain", "typesafe", "jev", "pytorch", "fastapi",
     "pgvector", "postgresql", "docker", "pydantic", "트러블슈팅", "koelectra",
     "영속", "대화 메모리", "advisory lock", "hitl", "비식별", "리랭커", "cross-encoder",
+    "sse", "스트리밍", "ner", "bm25", "rrf", "임베딩", "벡터", "llm", "프롬프트",
     "문제 해결", "성능", "최적화", "속도", "비용", "지연", "p95", "정확도", "아키텍처",
     "워크플로", "병렬", "팀원", "역할", "배운 점", "느낀 점",
     "대외활동", "국제교류", "치바상업", "싱가포르 연수", "해외 견학", "해외 연수",
