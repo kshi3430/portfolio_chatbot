@@ -158,6 +158,13 @@ async def health_check():
         (os.getenv("LANGSMITH_PROJECT") or os.getenv("LANGCHAIN_PROJECT") or "").strip()
         or "default"
     )
+    agent_id = os.getenv("LANGSMITH_AGENT_ID", "").strip() or "unset"
+    agent_env = os.getenv("LANGSMITH_AGENT_ENVIRONMENT", "").strip() or "unset"
+    try:
+        import langsmith as _ls
+        ls_version = getattr(_ls, "__version__", "unknown")
+    except Exception:
+        ls_version = "not_installed"
 
     return {
         "status": "healthy",
@@ -168,6 +175,9 @@ async def health_check():
             "has_api_key": has_api_key,
             "tracing_flag": tracing_flag,
             "project": project,
+            "agent_id": agent_id,
+            "agent_environment": agent_env,
+            "sdk_version": ls_version,
         },
     }
 

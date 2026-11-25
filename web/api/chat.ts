@@ -182,12 +182,13 @@ function isLangSmithEnabled() {
   return tracing && Boolean(getLangSmithApiKey());
 }
 
-function getLangSmithProject() {
-  return (
+function getLangSmithProject(): string | undefined {
+  const explicitProject =
     process.env.LANGSMITH_PROJECT?.trim() ||
-    process.env.LANGCHAIN_PROJECT?.trim() ||
-    "portfolio-chatbot"
-  );
+    process.env.LANGCHAIN_PROJECT?.trim();
+  if (explicitProject) return explicitProject;
+  if (process.env.LANGSMITH_AGENT_ID?.trim()) return undefined;
+  return "portfolio-chatbot";
 }
 
 function getLangSmithClient() {
