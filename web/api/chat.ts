@@ -158,21 +158,34 @@ let cachedPersonalDocs: EmbeddedDocument[] | null = null;
 let cachedClient: OpenAI | null = null;
 let cachedLangSmithClient: LangSmithClient | null = null;
 
-function isLangSmithEnabled() {
-  const tracing =
-    process.env.LANGSMITH_TRACING === "true" ||
-    process.env.LANGSMITH_TRACING_V2 === "true" ||
-    process.env.LANGCHAIN_TRACING_V2 === "true";
-  const hasKey = Boolean(
-    process.env.LANGSMITH_API_KEY || process.env.LANGCHAIN_API_KEY
+function getLangSmithApiKey() {
+  return (
+    process.env.LANGSMITH_API_KEY?.trim() ||
+    process.env.LANGCHAIN_API_KEY?.trim() ||
+    ""
   );
-  return tracing && hasKey;
+}
+
+function getLangSmithTracingFlag() {
+  return (
+    process.env.LANGSMITH_TRACING?.trim().toLowerCase() ||
+    process.env.LANGSMITH_TRACING_V2?.trim().toLowerCase() ||
+    process.env.LANGCHAIN_TRACING_V2?.trim().toLowerCase() ||
+    process.env.LANGCHAIN_TRACING?.trim().toLowerCase() ||
+    ""
+  );
+}
+
+function isLangSmithEnabled() {
+  const flag = getLangSmithTracingFlag();
+  const tracing = flag === "true" || flag === "1";
+  return tracing && Boolean(getLangSmithApiKey());
 }
 
 function getLangSmithProject() {
   return (
-    process.env.LANGSMITH_PROJECT ||
-    process.env.LANGCHAIN_PROJECT ||
+    process.env.LANGSMITH_PROJECT?.trim() ||
+    process.env.LANGCHAIN_PROJECT?.trim() ||
     "portfolio-chatbot"
   );
 }
@@ -180,10 +193,10 @@ function getLangSmithProject() {
 function getLangSmithClient() {
   if (!cachedLangSmithClient) {
     cachedLangSmithClient = new LangSmithClient({
-      apiKey: process.env.LANGSMITH_API_KEY || process.env.LANGCHAIN_API_KEY,
+      apiKey: getLangSmithApiKey(),
       apiUrl:
-        process.env.LANGSMITH_ENDPOINT ||
-        process.env.LANGCHAIN_ENDPOINT ||
+        process.env.LANGSMITH_ENDPOINT?.trim() ||
+        process.env.LANGCHAIN_ENDPOINT?.trim() ||
         undefined,
     });
   }
@@ -213,6 +226,7 @@ function getClient() {
       ? wrapOpenAI(rawClient, {
           client: getLangSmithClient(),
           project_name: getLangSmithProject(),
+          tracingEnabled: true,
         })
       : rawClient;
   }
@@ -1167,6 +1181,13 @@ function writeSseEvent(res: any, payload: Record<string, unknown>) {
 
 export default async function handler(req: any, res: any) {
   if (req.method === "GET") {
+    const langsmithDiag = {
+      enabled: isLangSmithEnabled(),
+      project: getLangSmithProject(),
+      hasApiKey: Boolean(getLangSmithApiKey()),
+      tracingFlag: getLangSmithTracingFlag() || "unset",
+      hasRagApiUrl: Boolean(process.env.RAG_API_URL),
+    };
     if (process.env.RAG_API_URL) {
       const ragApiUrl = process.env.RAG_API_URL.replace(/\/$/, "");
       try {
@@ -1175,12 +1196,12 @@ export default async function handler(req: any, res: any) {
           signal: AbortSignal.timeout(4000),
         });
         const data = await health.json().catch(() => null);
-        return res.status(200).json({ ok: true, backend: data || { status: health.status } });
+        return res.status(200).json({ ok: true, backend: data || { status: health.status }, langsmith: langsmithDiag });
       } catch {
-        return res.status(200).json({ ok: true, backend: { status: "waking_up" } });
+        return res.status(200).json({ ok: true, backend: { status: "waking_up" }, langsmith: langsmithDiag });
       }
     }
-    return res.status(200).json({ ok: true, backend: { status: "serverless_only" } });
+    return res.status(200).json({ ok: true, backend: { status: "serverless_only" }, langsmith: langsmithDiag });
   }
 
   if (req.method !== "POST") {
@@ -1258,7 +1279,8 @@ export default async function handler(req: any, res: any) {
             run_type: "chain",
             client: getLangSmithClient(),
             project_name: getLangSmithProject(),
-            metadata: { endpoint: targetEndpoint, stream: wantsStream },
+            tracingEnabled: true,
+            metadata: { endpoint: targetEndpoint, stream: wantsStream, question: message },
           })()
         : await runProxy();
 
@@ -1333,6 +1355,7 @@ export default async function handler(req: any, res: any) {
               run_type: "retriever",
               client: getLangSmithClient(),
               project_name: getLangSmithProject(),
+              tracingEnabled: true,
               metadata: { intent, targetProject, uiTarget },
             }
           )(message)
