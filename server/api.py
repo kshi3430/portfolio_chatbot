@@ -145,10 +145,30 @@ async def health_check():
     load_dotenv(ROOT_DIR / ".env", override=True)
     rag_engine.ensure_jev_client(os.getenv("TYPESAFE_API_KEY", ""))
 
+    tracing_flag = (
+        os.getenv("LANGSMITH_TRACING", "").strip().lower()
+        or os.getenv("LANGSMITH_TRACING_V2", "").strip().lower()
+        or os.getenv("LANGCHAIN_TRACING_V2", "").strip().lower()
+        or "unset"
+    )
+    has_api_key = bool(
+        (os.getenv("LANGSMITH_API_KEY") or os.getenv("LANGCHAIN_API_KEY") or "").strip()
+    )
+    project = (
+        (os.getenv("LANGSMITH_PROJECT") or os.getenv("LANGCHAIN_PROJECT") or "").strip()
+        or "default"
+    )
+
     return {
         "status": "healthy",
         "rag_engine": "ready",
         "jev_classifier": "active" if rag_engine.jev_client is not None else "fallback_rule",
+        "langsmith": {
+            "enabled": tracing_flag in ("true", "1") and has_api_key,
+            "has_api_key": has_api_key,
+            "tracing_flag": tracing_flag,
+            "project": project,
+        },
     }
 
 
