@@ -161,6 +161,7 @@ let cachedLangSmithClient: LangSmithClient | null = null;
 function isLangSmithEnabled() {
   const tracing =
     process.env.LANGSMITH_TRACING === "true" ||
+    process.env.LANGSMITH_TRACING_V2 === "true" ||
     process.env.LANGCHAIN_TRACING_V2 === "true";
   const hasKey = Boolean(
     process.env.LANGSMITH_API_KEY || process.env.LANGCHAIN_API_KEY
@@ -1200,12 +1201,19 @@ export default async function handler(req: any, res: any) {
     const ragApiUrl = process.env.RAG_API_URL.replace(/\/$/, "");
     const targetEndpoint = wantsStream ? "/chat/stream" : "/chat";
     const runProxy = async () => {
-      const ragResponse = await fetch(`${ragApiUrl}${targetEndpoint}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: message, history }),
-        signal: AbortSignal.timeout(8000),
-      });
+      const controller = new AbortController();
+      const connectTimeout = setTimeout(() => controller.abort(), 8000);
+      let ragResponse: Response;
+      try {
+        ragResponse = await fetch(`${ragApiUrl}${targetEndpoint}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question: message, history }),
+          signal: controller.signal,
+        });
+      } finally {
+        clearTimeout(connectTimeout);
+      }
 
       if (ragResponse.ok) {
         if (wantsStream) {
