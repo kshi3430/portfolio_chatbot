@@ -60,12 +60,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-void text-on-surface relative pb-32 selection:bg-primary-emerald/30 selection:text-white">
-      {/* Absolute graphic elements */}
-      <div className="noise-overlay" />
-      <div className="atmospheric-glow top-1/4 left-10 w-[500px] h-[500px]" />
-      <div className="atmospheric-glow bottom-1/4 right-10 w-[600px] h-[600px]" />
-
+    <div className="min-h-screen bg-void text-on-surface relative pb-32 selection:bg-indigo-100 selection:text-[#0A0A0A]">
       {/* Navigation Header */}
       <Header />
 
@@ -81,22 +76,22 @@ export default function App() {
         </main>
 
         {/* Footer */}
-        <footer id="contact" className="border-t border-white/5 mt-24 pt-16 pb-12 bg-void/50 backdrop-blur scroll-mt-24">
+        <footer id="contact" className="border-t border-white/5 [:is(.light)_&]:border-[#E5E7EB] mt-24 pt-16 pb-12 bg-void/50 [:is(.light)_&]:bg-[#FFFFFF] backdrop-blur scroll-mt-24">
           <div className="max-w-5xl mx-auto px-6 sm:px-10">
             <div className="glass-card rounded-3xl p-8 md:p-12 mb-10 flex flex-col md:flex-row md:items-end justify-between gap-8">
               <div>
-                <div className="font-mono text-xs text-primary-emerald tracking-widest mb-4">LET'S CONNECT</div>
-                <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">함께 해결할 문제가 있나요?</h2>
-                <p className="text-on-surface-variant max-w-xl">작은 이야기라도 언제든 편하게 연락해 주세요.</p>
+                <div className="font-mono text-xs text-primary-emerald [:is(.light)_&]:text-indigo-600 tracking-widest mb-4">LET'S CONNECT</div>
+                <h2 className="font-display text-3xl md:text-5xl font-bold mb-4 text-on-surface">함께 해결할 문제가 있나요?</h2>
+                <p className="text-on-surface-variant [:is(.light)_&]:text-[#374151] max-w-xl">작은 이야기라도 언제든 편하게 연락해 주세요.</p>
               </div>
-              <a href="mailto:kshi3430@gmail.com" className="shrink-0 bg-primary-emerald text-void font-semibold px-6 py-3 rounded-xl hover:bg-primary-glow transition-colors">이메일 보내기</a>
+              <a href="mailto:kshi3430@gmail.com" className="shrink-0 bg-primary-emerald [:is(.light)_&]:bg-[#111827] text-void [:is(.light)_&]:text-white font-semibold px-6 py-3 rounded-xl hover:bg-primary-glow [:is(.light)_&]:hover:bg-[#1F2937] transition-colors shadow-sm">이메일 보내기</a>
             </div>
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-xs text-on-surface-variant/50">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-xs text-on-surface-variant/50 [:is(.light)_&]:text-[#71717A]">
             <div>
               © 2026 Kim Seonghyeon. All rights reserved.
             </div>
             <div className="flex items-center gap-1">
-              <Terminal className="w-3.5 h-3.5 text-primary-emerald" />
+              <Terminal className="w-3.5 h-3.5 text-primary-emerald [:is(.light)_&]:text-violet-600" />
               <span>AI_ENGINEER_PORTFOLIO</span>
             </div>
             </div>
@@ -113,16 +108,16 @@ export default function App() {
               initial={{ opacity: 0, y: 10, scale: 0.9 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="pointer-events-auto bg-surface-low border border-primary-emerald/30 text-on-surface px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 max-w-xs text-xs font-mono relative"
+              className="pointer-events-auto bg-surface-low [:is(.light)_&]:bg-white border border-primary-emerald/30 [:is(.light)_&]:border-[#E5E7EB] text-on-surface px-4 py-3 rounded-xl shadow-2xl [:is(.light)_&]:shadow-[0_12px_32px_-8px_rgba(15,23,42,0.12)] flex items-center gap-3 max-w-xs text-xs font-mono relative"
             >
-              <Bot className="w-4 h-4 text-primary-emerald animate-pulse shrink-0" />
-              <div className="flex-1">
-                김성현의 <b className="text-primary-emerald">Portfolio AI</b>에게 프로젝트를 물어보세요.
+              <Bot className="w-4 h-4 text-primary-emerald [:is(.light)_&]:text-indigo-600 animate-pulse shrink-0" />
+              <div className="flex-1 [:is(.light)_&]:text-[#374151]">
+                김성현의 <b className="text-primary-emerald [:is(.light)_&]:text-[#0A0A0A]">Portfolio AI</b>에게 프로젝트를 물어보세요.
               </div>
               <button
                 type="button"
                 onClick={() => setShowTooltip(false)}
-                className="text-on-surface-variant/50 hover:text-on-surface shrink-0 p-0.5 cursor-pointer"
+                className="text-on-surface-variant/50 [:is(.light)_&]:text-[#71717A] hover:text-on-surface shrink-0 p-0.5 cursor-pointer"
                 title="Dismiss"
               >
                 <X className="w-3.5 h-3.5" />
@@ -142,13 +137,13 @@ export default function App() {
             if (nextOpen) setHasOpenedChat(true);
             setShowTooltip(false);
           }}
-          className="pointer-events-auto w-14 h-14 rounded-full bg-primary-emerald hover:bg-primary-glow text-void flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.4)] hover:shadow-[0_0_40px_rgba(16,185,129,0.6)] border border-primary-glow/30 transition-all duration-300 relative group cursor-pointer"
+          className="pointer-events-auto w-14 h-14 rounded-full bg-primary-emerald [:is(.light)_&]:bg-[#111827] hover:bg-primary-glow [:is(.light)_&]:hover:bg-[#1F2937] text-void [:is(.light)_&]:text-white flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.4)] [:is(.light)_&]:shadow-[0_12px_28px_-6px_rgba(15,23,42,0.28)] hover:shadow-[0_0_40px_rgba(16,185,129,0.6)] [:is(.light)_&]:hover:shadow-[0_16px_34px_-6px_rgba(15,23,42,0.36)] border border-primary-glow/30 [:is(.light)_&]:border-[#1F2937] transition-all duration-300 relative group cursor-pointer"
           title="Toggle AI Twin Assistant"
         >
-          <div className="absolute inset-0 rounded-full bg-primary-emerald/20 animate-ping opacity-75 pointer-events-none" />
+          <div className="absolute inset-0 rounded-full bg-primary-emerald/20 [:is(.light)_&]:hidden animate-ping opacity-75 pointer-events-none" />
           <Bot className="w-6 h-6 relative z-10 transition-transform duration-500 group-hover:rotate-12" />
           {!hasOpenedChat && (
-            <span className="absolute top-0.5 right-0.5 w-3.5 h-3.5 bg-red-500 border-2 border-void rounded-full animate-pulse" />
+            <span className="absolute top-0.5 right-0.5 w-3.5 h-3.5 bg-red-500 border-2 border-void [:is(.light)_&]:border-white rounded-full animate-pulse" />
           )}
         </motion.button>
       </div>
@@ -161,7 +156,7 @@ export default function App() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 50, scale: 0.95 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="fixed bottom-24 right-6 w-[440px] max-w-[calc(100vw-32px)] h-[600px] max-h-[80vh] z-[120] flex flex-col shadow-2xl"
+            className="fixed bottom-24 right-4 sm:right-6 w-[calc(100vw-32px)] sm:w-[440px] h-[600px] max-h-[75vh] sm:max-h-[80vh] z-[120] flex flex-col shadow-2xl"
           >
             <ChatPanel onClose={() => setIsChatOpen(false)} onNavigate={handleChatNavigate} />
           </motion.div>

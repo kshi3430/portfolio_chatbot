@@ -77,7 +77,7 @@ except ImportError:
     )
 
 
-RAG_INDEX_VERSION = "portfolio-json-v16-portfolio-site-features"
+RAG_INDEX_VERSION = "portfolio-md-v17-h2-chunks"
 DEFAULT_UPSTAGE_BASE_URL = "https://api.upstage.ai/v1"
 DEFAULT_UPSTAGE_MODEL = "solar-pro4"
 DEFAULT_PASSAGE_EMBEDDING_MODEL = "solar-embedding-2-passage"
@@ -355,11 +355,13 @@ class RAGEngine:
         top_k: int = 5,
         chunk_size: int = 1000,
         chunk_overlap: int = 0,
+        docs_dir: Optional[str] = None,
     ):
         self.projects_json_path = projects_json_path
         self.personal_json_path = personal_json_path or str(
             Path(projects_json_path).resolve().parent / "personal.json"
         )
+        self.docs_dir = docs_dir or str(Path(projects_json_path).resolve().parent / "docs")
         self.upstage_api_key = upstage_api_key
         self.typesafe_api_key = (
             typesafe_api_key if typesafe_api_key is not None else os.getenv("TYPESAFE_API_KEY", "")
@@ -834,46 +836,164 @@ class RAGEngine:
 
         return documents
 
+    def _parse_md_header_metadata(self, header_text: str, filename: str) -> Dict[str, Any]:
+        """## [카테고리 / 섹션] 제목 형식에서 하이브리드 메타데이터를 추출합니다."""
+        match = re.match(r"^\[([^\]]+)\]\s*(.*)$", header_text.strip())
+        raw_tag = match.group(1).strip() if match else ""
+        clean_title = (match.group(2).strip() if match else header_text.strip()) or header_text.strip()
+        parts = [p.strip() for p in raw_tag.split("/", 1)] if raw_tag else ["", ""]
+        cat_part = parts[0] if len(parts) > 0 else ""
+        sec_part = parts[1] if len(parts) > 1 else ""
+        cat_lower = cat_part.lower()
+        sec_lower = sec_part.lower()
+
+        doc_category = "profile"
+        document_type = "profile"
+        section = "profile"
+        project_id = ""
+        project_name = ""
+        topic = ""
+
+        if filename == "personal.md" or cat_lower == "personal":
+            doc_category = "personal"
+            document_type = "personal"
+            section = "personal"
+            topic = sec_part or clean_title
+        elif cat_lower == "jichini":
+            doc_category = "project"
+            document_type = "project"
+            project_id = "project-jichini"
+            project_name = "JICHINI"
+        elif cat_lower == "capteam":
+            doc_category = "project"
+            document_type = "project"
+            project_id = "project-capteam"
+            project_name = "CapTeam"
+        elif cat_lower == "portfolio chatbot":
+            doc_category = "project"
+            document_type = "project"
+            project_id = "project-portfolio-chatbot"
+            project_name = "Portfolio AI Chatbot"
+        elif cat_lower == "project":
+            doc_category = "project"
+            document_type = "project_summary"
+            section = "summary"
+            project_id = "all"
+
+        if doc_category == "project" and project_id != "all":
+            if "개요" in sec_lower:
+                section = "overview"
+            elif "팀원" in sec_lower:
+                section = "team"
+            elif "문제" in sec_lower or "트러블슈팅" in sec_lower:
+                section = "troubleshooting"
+            elif "배운 점" in sec_lower:
+                section = "lessons"
+            elif any(k in sec_lower for k in ("개발", "이중화", "지식", "검색", "관측")):
+                section = "development"
+        elif doc_category == "profile":
+            if "포트폴리오 기능" in sec_lower:
+                document_type = "portfolio_site"
+                topic = "portfolio_features"
+            elif "기술 스택" in sec_lower:
+                document_type = "skill"
+                topic = "ai_stack" if "primary" in clean_title.lower() else "language_backend_tools"
+            elif "수상" in sec_lower:
+                document_type = "award_summary"
+                topic = "award_summary"
+            elif "대외활동" in sec_lower:
+                document_type = "activity_summary"
+                topic = "activity_summary"
+            elif "학력" in sec_lower:
+                document_type = "education"
+                topic = "school"
+
+        return {
+            "source": f"[{raw_tag}] {clean_title}" if raw_tag else clean_title,
+            "doc_category": doc_category,
+            "document_type": document_type,
+            "section": section,
+            "project_id": project_id,
+            "project_name": project_name,
+            "topic": topic,
+        }
+
+    def _split_markdown_by_h2(self, markdown_text: str, filename: str) -> List[Document]:
+        """Markdown 문서를 ## (h2) 헤더 단위로 1개 청크씩 분할합니다 (### 하위 제목은 유지)."""
+        docs: List[Document] = []
+        current_header: Optional[str] = None
+        current_lines: List[str] = []
+
+        def flush_chunk():
+            if not current_header:
+                return
+            body = "\n".join(current_lines).strip()
+            if not body:
+                return
+            meta = self._parse_md_header_metadata(current_header, filename)
+            doc_id = f"{Path(filename).stem}-h2-{len(docs) + 1}"
+            meta["doc_id"] = doc_id
+            meta["chunk_id"] = doc_id
+            docs.append(
+                Document(
+                    page_content=f"## {current_header}\n{body}",
+                    metadata=meta,
+                )
+            )
+
+        for line in markdown_text.splitlines():
+            h2_match = re.match(r"^##\s+(.+)$", line)
+            if h2_match:
+                flush_chunk()
+                current_header = h2_match.group(1).strip()
+                current_lines = []
+            elif current_header is not None:
+                current_lines.append(line)
+
+        flush_chunk()
+        return docs
+
     def load_projects(self) -> List[Document]:
         """
-        projects.json과 personal.json을 모두 로드하여 LangChain Document 형식으로 변환합니다.
+        data/docs/*.md 마크다운 문서를 ## (h2) 헤더 단위로 청킹해 로드합니다.
         """
-        with open(self.projects_json_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
+        docs_path = Path(self.docs_dir)
+        md_files = sorted(docs_path.glob("*.md")) if docs_path.exists() else []
+        if not md_files:
+            raise FileNotFoundError(f"Markdown 지식 문서를 찾을 수 없습니다: {docs_path}")
 
-        if isinstance(data, dict):
-            documents = self._portfolio_to_documents(data)
-        elif isinstance(data, list):
-            documents = []
-            for idx, item in enumerate(data):
-                if not isinstance(item, dict):
-                    continue
-                doc = self._rag_doc_to_document(item, idx) if "content" in item else self._project_card_to_document(item, idx)
-                if doc.page_content.strip():
-                    documents.append(doc)
-        else:
-            raise ValueError("projects.json의 최상위 값은 객체 또는 리스트여야 합니다.")
-
+        documents: List[Document] = []
         personal_count = 0
-        if self.personal_json_path and os.path.exists(self.personal_json_path):
-            with open(self.personal_json_path, "r", encoding="utf-8") as f:
-                personal_data = json.load(f)
-            personal_docs = self._personal_to_documents(personal_data)
-            personal_count = len(personal_docs)
-            documents.extend(personal_docs)
+        for md_file in md_files:
+            raw_text = md_file.read_text(encoding="utf-8")
+            file_docs = self._split_markdown_by_h2(raw_text, md_file.name)
+            personal_count += sum(
+                1 for d in file_docs if d.metadata.get("doc_category") == "personal"
+            )
+            documents.extend(file_docs)
 
-        print(f"✅ 총 {len(documents)}개 RAG 문서 로드 완료 (포트폴리오: {len(documents) - personal_count}개, 개인정보: {personal_count}개)")
+        print(
+            f"✅ 총 {len(documents)}개 Markdown(##) 청크 로드 완료 "
+            f"(포트폴리오: {len(documents) - personal_count}개, 개인정보: {personal_count}개)"
+        )
         return documents
 
     def _split_documents(self, documents: List[Document]) -> List[Document]:
+        max_h2_len = max(self.chunk_size * 2, 2200)
         text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=self.chunk_size,
+            chunk_size=max_h2_len,
             chunk_overlap=self.chunk_overlap,
             separators=["\n\n", "\n", " ", ""],
         )
-        splits = text_splitter.split_documents(documents)
-        for idx, chunk in enumerate(splits):
-            chunk.metadata.setdefault("chunk_id", f"{chunk.metadata.get('doc_id', 'doc')}_{idx}")
+        splits: List[Document] = []
+        for doc in documents:
+            if len(doc.page_content) <= max_h2_len:
+                splits.append(doc)
+            else:
+                sub_docs = text_splitter.split_documents([doc])
+                for idx, chunk in enumerate(sub_docs):
+                    chunk.metadata["chunk_id"] = f"{chunk.metadata.get('doc_id', 'doc')}_{idx}"
+                    splits.append(chunk)
         return splits
 
     def _chunk_indexing_text(self, doc: Document) -> str:
@@ -2165,13 +2285,9 @@ def build_rag_engine(
     RAG 엔진 빌더 (projects.json 또는 personal.json 변경 시 벡터 DB 자동 재구축)
     """
     persist_dir = kwargs.get("persist_directory", "./chroma_db")
-    personal_json_path = kwargs.get("personal_json_path") or str(
-        Path(projects_json_path).resolve().parent / "personal.json"
-    )
-
-    projects_mtime = os.path.getmtime(projects_json_path) if os.path.exists(projects_json_path) else 0
-    personal_mtime = os.path.getmtime(personal_json_path) if os.path.exists(personal_json_path) else 0
-    data_mtime = max(projects_mtime, personal_mtime)
+    docs_dir = Path(kwargs.get("docs_dir") or (Path(projects_json_path).resolve().parent / "docs"))
+    md_files = list(docs_dir.glob("*.md")) if docs_dir.exists() else []
+    data_mtime = max((os.path.getmtime(p) for p in md_files), default=0)
 
     db_mtime = os.path.getmtime(persist_dir) if os.path.exists(persist_dir) else 0
     data_changed = data_mtime > db_mtime

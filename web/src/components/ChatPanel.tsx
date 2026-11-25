@@ -569,32 +569,33 @@ export function ChatPanel({
   };
 
   return (
-    <div className="font-chat glass-card rounded-2xl border border-white/10 bg-surface-low/50 flex flex-col h-[650px] relative overflow-hidden shadow-2xl">
+    <div className="font-chat glass-card rounded-2xl border border-white/10 [:is(.light)_&]:border-[#E5E7EB] bg-surface-low/50 [:is(.light)_&]:bg-white flex flex-col h-full relative overflow-hidden shadow-2xl [:is(.light)_&]:shadow-[0_20px_50px_-14px_rgba(15,23,42,0.14)]">
       {/* Header */}
-      <div className="px-4 py-3.5 border-b border-white/5 bg-surface-dim/80 flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-8 h-8 rounded-lg bg-primary-emerald/15 border border-primary-emerald/30 flex items-center justify-center text-primary-emerald shrink-0">
+      <div className="px-4 py-3.5 border-b border-white/5 [:is(.light)_&]:border-[#E5E7EB] bg-surface-dim/80 [:is(.light)_&]:bg-[#F9FAFB] flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2.5 min-w-0 flex-1">
+          <div className="w-8 h-8 rounded-lg bg-primary-emerald/15 [:is(.light)_&]:bg-[#111827] border border-primary-emerald/30 [:is(.light)_&]:border-[#111827] flex items-center justify-center text-primary-emerald [:is(.light)_&]:text-white shrink-0">
             <Bot className="w-4 h-4" />
           </div>
           <div className="min-w-0">
-            <h4 className="font-display text-sm font-bold text-on-surface whitespace-nowrap">
+            <h4 className="font-display text-[13px] sm:text-sm font-bold text-on-surface truncate">
               Portfolio AI Assistant
             </h4>
-            <p className="text-[10px] font-mono text-on-surface-variant whitespace-nowrap">
+            <p className="text-[10px] font-mono text-on-surface-variant [:is(.light)_&]:text-[#71717A] whitespace-nowrap">
               AI ENGINEER
             </p>
           </div>
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
-          <div className="flex items-center gap-1 font-mono text-[9.5px] text-primary-emerald bg-primary-emerald/10 border border-primary-emerald/20 px-2 py-1 rounded whitespace-nowrap">
+          <div className="flex items-center gap-1 font-mono text-[9.5px] text-primary-emerald [:is(.light)_&]:text-emerald-700 bg-primary-emerald/10 [:is(.light)_&]:bg-emerald-50 border border-primary-emerald/20 [:is(.light)_&]:border-emerald-200 px-2 py-1 rounded whitespace-nowrap">
             <Sparkles className="w-3 h-3" />
-            <span>TWIN_BOT_ACTIVE</span>
+            <span className="hidden sm:inline">TWIN_BOT_ACTIVE</span>
+            <span className="sm:hidden">ACTIVE</span>
           </div>
           {onClose && (
             <button
               type="button"
               onClick={onClose}
-              className="w-7 h-7 rounded-lg bg-surface-high hover:bg-surface-highest border border-white/5 flex items-center justify-center text-on-surface hover:text-primary-emerald transition-colors cursor-pointer"
+              className="w-7 h-7 rounded-lg bg-surface-high [:is(.light)_&]:bg-white hover:bg-surface-highest [:is(.light)_&]:hover:bg-[#F3F4F6] border border-white/5 [:is(.light)_&]:border-[#E5E7EB] flex items-center justify-center text-on-surface hover:text-primary-emerald [:is(.light)_&]:hover:text-[#0A0A0A] transition-colors cursor-pointer"
               title="Close Assistant"
             >
               <X className="w-4 h-4" />
@@ -604,7 +605,7 @@ export function ChatPanel({
       </div>
 
       {/* Messages Scroll Area */}
-      <div className="flex-1 overflow-y-auto p-5 space-y-4 scrollbar-thin">
+      <div className="flex-1 overflow-y-auto p-5 space-y-4 scrollbar-thin [:is(.light)_&]:bg-white">
         {messages.map((msg) => {
           const isModel = msg.role === "model";
           return (
@@ -612,12 +613,12 @@ export function ChatPanel({
               key={msg.id}
               className={`flex gap-3 max-w-[88%] ${isModel ? "self-start" : "self-end ml-auto flex-row-reverse"}`}
             >
-              <div className={`w-8 h-8 rounded-full border flex items-center justify-center shrink-0 ${isModel ? "bg-surface-high border-white/5 text-primary-emerald" : "bg-primary-emerald border-primary-emerald/20 text-void"}`}>
+              <div className={`w-8 h-8 rounded-full border flex items-center justify-center shrink-0 ${isModel ? "bg-surface-high [:is(.light)_&]:bg-[#F9FAFB] border-white/5 [:is(.light)_&]:border-[#E5E7EB] text-primary-emerald [:is(.light)_&]:text-[#111827]" : "bg-primary-emerald [:is(.light)_&]:bg-[#111827] border-primary-emerald/20 [:is(.light)_&]:border-[#111827] text-void [:is(.light)_&]:text-white"}`}>
                 {isModel ? <Bot className="w-4 h-4" /> : <User className="w-4 h-4" />}
               </div>
 
               <div className="min-w-0 flex-1">
-                <div className={`rounded-2xl px-4 py-3.5 text-[14.5px] sm:text-[15px] leading-[1.75] tracking-[0.005em] ${isModel ? "bg-surface-base border border-white/5 text-on-surface/90 font-normal" : "bg-primary-emerald text-void font-medium whitespace-pre-line"}`}>
+                <div className={`rounded-2xl px-4 py-3.5 text-[14.5px] sm:text-[15px] leading-[1.75] tracking-[0.005em] ${isModel ? "bg-surface-base [:is(.light)_&]:bg-[#F9FAFB] border border-white/5 [:is(.light)_&]:border-[#E5E7EB] text-on-surface/90 [:is(.light)_&]:text-[#374151] font-normal" : "bg-primary-emerald [:is(.light)_&]:bg-[#111827] text-void [:is(.light)_&]:text-white font-medium whitespace-pre-line"}`}>
                   {isModel ? <RichMessageContent text={msg.text} /> : msg.text}
                 </div>
                 {isModel && (msg.navLabel || (msg.sources && msg.sources.length > 0)) && (
@@ -626,7 +627,7 @@ export function ChatPanel({
                       <button
                         type="button"
                         onClick={() => msg.navigation && onNavigate?.(msg.navigation)}
-                        className="inline-flex items-center gap-1.5 mt-2 px-3 py-1 rounded-full bg-primary-emerald/10 hover:bg-primary-emerald/18 border border-primary-emerald/25 text-xs font-medium text-primary-emerald transition-colors cursor-pointer"
+                        className="inline-flex items-center gap-1.5 mt-2 px-3 py-1 rounded-full bg-primary-emerald/10 [:is(.light)_&]:bg-indigo-50 hover:bg-primary-emerald/18 [:is(.light)_&]:hover:bg-indigo-100 border border-primary-emerald/25 [:is(.light)_&]:border-indigo-200 text-xs font-medium text-primary-emerald [:is(.light)_&]:text-indigo-700 transition-colors cursor-pointer"
                       >
                         <MapPin className="w-3 h-3 shrink-0" />
                         <span>{msg.navLabel} 화면으로 이동</span>
@@ -637,7 +638,7 @@ export function ChatPanel({
                     )}
                   </div>
                 )}
-                <div className={`text-[11px] text-on-surface-variant/55 mt-1.5 ${isModel ? "" : "text-right"}`}>
+                <div className={`text-[11px] text-on-surface-variant/55 [:is(.light)_&]:text-[#71717A] mt-1.5 ${isModel ? "" : "text-right"}`}>
                   {msg.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                 </div>
               </div>
@@ -648,27 +649,27 @@ export function ChatPanel({
         {/* Loading Indicator (첫 토큰 수신 전까지 표시) */}
         {isLoading && messages[messages.length - 1]?.role !== "model" && (
           <div className="flex gap-3 max-w-[80%] self-start">
-            <div className="w-8 h-8 rounded-full bg-surface-high border border-white/5 flex items-center justify-center text-primary-emerald shrink-0">
+            <div className="w-8 h-8 rounded-full bg-surface-high [:is(.light)_&]:bg-[#F9FAFB] border border-white/5 [:is(.light)_&]:border-[#E5E7EB] flex items-center justify-center text-primary-emerald [:is(.light)_&]:text-[#111827] shrink-0">
               <Bot className="w-4 h-4" />
             </div>
-            <div className="bg-surface-base border border-white/5 rounded-2xl px-4 py-3 flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 bg-primary-emerald rounded-full animate-bounce [animation-delay:-0.3s]" />
-              <span className="w-1.5 h-1.5 bg-primary-emerald rounded-full animate-bounce [animation-delay:-0.15s]" />
-              <span className="w-1.5 h-1.5 bg-primary-emerald rounded-full animate-bounce" />
+            <div className="bg-surface-base [:is(.light)_&]:bg-[#F9FAFB] border border-white/5 [:is(.light)_&]:border-[#E5E7EB] rounded-2xl px-4 py-3 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 bg-primary-emerald [:is(.light)_&]:bg-[#111827] rounded-full animate-bounce [animation-delay:-0.3s]" />
+              <span className="w-1.5 h-1.5 bg-primary-emerald [:is(.light)_&]:bg-[#111827] rounded-full animate-bounce [animation-delay:-0.15s]" />
+              <span className="w-1.5 h-1.5 bg-primary-emerald [:is(.light)_&]:bg-[#111827] rounded-full animate-bounce" />
             </div>
           </div>
         )}
 
         {/* Error message */}
         {errorMessage && (
-          <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl flex gap-3 text-xs">
+          <div className="bg-red-500/10 [:is(.light)_&]:bg-rose-50 border border-red-500/20 [:is(.light)_&]:border-rose-200 text-red-400 [:is(.light)_&]:text-rose-700 p-4 rounded-xl flex gap-3 text-xs">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <div className="flex-1">
               <p className="font-semibold mb-1">통신 오류가 발생했습니다.</p>
-              <p className="text-red-400/80">{errorMessage}</p>
+              <p className="text-red-400/80 [:is(.light)_&]:text-rose-600">{errorMessage}</p>
               <button
                 onClick={() => setErrorMessage(null)}
-                className="mt-2 text-primary-emerald hover:underline font-mono text-[10px] flex items-center gap-1 cursor-pointer"
+                className="mt-2 text-primary-emerald [:is(.light)_&]:text-[#111827] hover:underline font-mono text-[10px] flex items-center gap-1 cursor-pointer"
               >
                 <RefreshCw className="w-3 h-3" />
                 창 닫기 및 재시도
@@ -681,19 +682,19 @@ export function ChatPanel({
       </div>
 
       {/* Message Input Box */}
-      <form onSubmit={handleFormSubmit} className="p-4 bg-surface-dim border-t border-white/5 flex gap-2">
+      <form onSubmit={handleFormSubmit} className="p-4 bg-surface-dim [:is(.light)_&]:bg-[#F9FAFB] border-t border-white/5 [:is(.light)_&]:border-[#E5E7EB] flex gap-2">
         <input
           type="text"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           placeholder={isLoading ? "답변 대기 중..." : "궁금한 것을 물어보세요..."}
           disabled={isLoading}
-          className="flex-1 bg-surface-low border border-white/5 rounded-xl px-4 py-3 text-[14.5px] sm:text-[15px] text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:border-primary-emerald/40 disabled:opacity-50"
+          className="flex-1 bg-surface-low [:is(.light)_&]:bg-white border border-white/5 [:is(.light)_&]:border-[#E5E7EB] rounded-xl px-4 py-3 text-[14.5px] sm:text-[15px] text-on-surface placeholder:text-on-surface-variant/40 [:is(.light)_&]:placeholder:text-[#71717A] focus:outline-none focus:border-primary-emerald/40 [:is(.light)_&]:focus:border-[#111827] disabled:opacity-50"
         />
         <button
           type="submit"
           disabled={!inputValue.trim() || isLoading}
-          className="bg-primary-emerald hover:bg-primary-glow text-void font-bold p-3 rounded-xl disabled:opacity-50 transition-colors flex items-center justify-center shrink-0 cursor-pointer"
+          className="bg-primary-emerald [:is(.light)_&]:bg-[#111827] hover:bg-primary-glow [:is(.light)_&]:hover:bg-[#1F2937] text-void [:is(.light)_&]:text-white font-bold p-3 rounded-xl disabled:opacity-50 transition-colors flex items-center justify-center shrink-0 cursor-pointer"
         >
           <Send className="w-4 h-4" />
         </button>

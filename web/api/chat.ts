@@ -1,9 +1,9 @@
+import fs from "fs";
+import path from "path";
 import OpenAI from "openai";
 import { Client as LangSmithClient } from "langsmith";
 import { wrapOpenAI } from "langsmith/wrappers/openai";
 import { traceable } from "langsmith/traceable";
-import portfolioData from "../data/projects.json" with { type: "json" };
-import personalData from "../data/personal.json" with { type: "json" };
 
 export const config = {
   maxDuration: 30,
@@ -245,266 +245,149 @@ function compact(value: unknown): string {
   return String(value);
 }
 
+function resolveDocsDir(): string {
+  const candidates = [
+    path.resolve(process.cwd(), "data/docs"),
+    path.resolve(process.cwd(), "web/data/docs"),
+    path.resolve(path.dirname(new URL(import.meta.url).pathname), "../data/docs"),
+  ];
+  for (const dir of candidates) {
+    if (fs.existsSync(dir)) return dir;
+  }
+  throw new Error(`Markdown docs directory not found. Tried: ${candidates.join(", ")}`);
+}
+
+function parseSectionMetadata(headerText: string, filename: string) {
+  const tagMatch = headerText.match(/^\[([^\]]+)\]\s*(.*)$/);
+  const rawTag = tagMatch ? tagMatch[1] : "";
+  const cleanTitle = (tagMatch ? tagMatch[2] : headerText).trim() || headerText.trim();
+  const [catPart = "", secPart = ""] = rawTag.split("/").map((s) => s.trim());
+  const catLower = catPart.toLowerCase();
+  const secLower = secPart.toLowerCase();
+
+  let docCategory: "profile" | "project" | "personal" = "profile";
+  let documentType = "profile";
+  let section = "profile";
+  let projectId: string | undefined;
+  let topic = "";
+
+  if (filename === "personal.md" || catLower === "personal") {
+    docCategory = "personal";
+    documentType = "personal";
+    section = "personal";
+    topic = secPart || cleanTitle;
+  } else if (catLower === "jichini") {
+    docCategory = "project";
+    documentType = "project";
+    projectId = "project-jichini";
+  } else if (catLower === "capteam") {
+    docCategory = "project";
+    documentType = "project";
+    projectId = "project-capteam";
+  } else if (catLower === "portfolio chatbot") {
+    docCategory = "project";
+    documentType = "project";
+    projectId = "project-portfolio-chatbot";
+  } else if (catLower === "project") {
+    docCategory = "project";
+    documentType = "project_summary";
+    section = "summary";
+    projectId = "all";
+  }
+
+  if (docCategory === "project" && projectId !== "all") {
+    if (secLower.includes("개요")) section = "overview";
+    else if (secLower.includes("팀원")) section = "team";
+    else if (secLower.includes("문제") || secLower.includes("트러블슈팅")) section = "troubleshooting";
+    else if (secLower.includes("배운 점")) section = "lessons";
+    else if (secLower.includes("개발") || secLower.includes("이중화") || secLower.includes("지식") || secLower.includes("검색") || secLower.includes("관측")) {
+      section = "development";
+    }
+  } else if (docCategory === "profile") {
+    if (secLower.includes("포트폴리오 기능")) {
+      documentType = "portfolio_site";
+      topic = "portfolio_features";
+    } else if (secLower.includes("기술 스택")) {
+      documentType = "skill";
+      topic = cleanTitle.toLowerCase().includes("primary") ? "ai_stack" : "language_backend_tools";
+    } else if (secLower.includes("수상")) {
+      documentType = "award_summary";
+      topic = "award_summary";
+    } else if (secLower.includes("대외활동")) {
+      documentType = "activity_summary";
+      topic = "activity_summary";
+    } else if (secLower.includes("학력")) {
+      documentType = "education";
+      topic = "school";
+    }
+  }
+
+  return {
+    title: rawTag ? `[${rawTag}] ${cleanTitle}` : cleanTitle,
+    docCategory,
+    documentType,
+    section,
+    projectId,
+    topic,
+  };
+}
+
+function splitMarkdownByH2(markdown: string, filename: string): RagDocument[] {
+  const docs: RagDocument[] = [];
+  const lines = markdown.split(/\r?\n/);
+  let currentHeader: string | null = null;
+  let currentLines: string[] = [];
+
+  const flushChunk = () => {
+    if (!currentHeader) return;
+    const body = currentLines.join("\n").trim();
+    if (!body) return;
+    const meta = parseSectionMetadata(currentHeader, filename);
+    docs.push({
+      id: `${filename.replace(/\.md$/, "")}-h2-${docs.length + 1}`,
+      title: meta.title,
+      content: `## ${currentHeader}\n${body}`,
+      docCategory: meta.docCategory,
+      documentType: meta.documentType,
+      section: meta.section,
+      projectId: meta.projectId,
+      topic: meta.topic,
+    });
+  };
+
+  for (const line of lines) {
+    const h2Match = line.match(/^##\s+(.+)$/);
+    if (h2Match) {
+      flushChunk();
+      currentHeader = h2Match[1].trim();
+      currentLines = [];
+    } else if (currentHeader !== null) {
+      currentLines.push(line);
+    }
+  }
+  flushChunk();
+  return docs;
+}
+
 function buildAllDocuments(): { portfolio: RagDocument[]; personal: RagDocument[] } {
   const portfolio: RagDocument[] = [];
   const personal: RagDocument[] = [];
-  const data = portfolioData as Record<string, any>;
-  const pData = personalData as Record<string, any>;
+  const docsDir = resolveDocsDir();
+  const files = fs
+    .readdirSync(docsDir)
+    .filter((f) => f.endsWith(".md"))
+    .sort();
 
-  if (data.profile) {
-    portfolio.push({
-      id: data.profile.id || "profile",
-      title: "프로필 소개",
-      content: String(data.profile.content || ""),
-      docCategory: "profile",
-      documentType: "profile",
-      section: "profile",
-      topic: "introduction",
-    });
-  }
-
-  for (const item of data.education_and_skills || []) {
-    const meta = item.metadata || {};
-    portfolio.push({
-      id: item.id || `profile-${portfolio.length}`,
-      title: String(meta.topic || meta.document_type || item.id || "역량"),
-      content: String(item.content || ""),
-      docCategory: "profile",
-      documentType: String(meta.document_type || "profile"),
-      section: "profile",
-      topic: String(meta.topic || ""),
-    });
-  }
-
-  const awards = Array.isArray(data.awards) ? data.awards : [];
-  for (const award of awards) {
-    const meta = award.metadata || {};
-    portfolio.push({
-      id: award.id || `award-${portfolio.length}`,
-      title: String(meta.award_name || award.id || "수상"),
-      content: String(award.content || ""),
-      docCategory: "profile",
-      documentType: "award",
-      section: "profile",
-      topic: "award",
-    });
-  }
-  if (awards.length > 0) {
-    const lines = [
-      "김성현의 수상 경력 전체 요약 목록",
-      "교내외 프로젝트 및 대회 수상 내역을 한 번에 정리한 문서입니다.",
-      ...awards.map(
-        (a: any) => `- ${a.metadata?.award_name || a.id}: ${String(a.content || "").trim()}`
-      ),
-    ];
-    portfolio.push({
-      id: "award-summary-all",
-      title: "수상 경력 전체 요약",
-      content: lines.join("\n"),
-      docCategory: "profile",
-      documentType: "award_summary",
-      section: "profile",
-      topic: "award_summary",
-    });
-  }
-
-  const activities = Array.isArray(data.activities) ? data.activities : [];
-  for (const act of activities) {
-    const meta = act.metadata || {};
-    portfolio.push({
-      id: act.id || `activity-${portfolio.length}`,
-      title: String(meta.activity_name || act.id || "활동"),
-      content: String(act.content || ""),
-      docCategory: "profile",
-      documentType: "activity",
-      section: "profile",
-      topic: String(meta.topic || "activity"),
-    });
-  }
-  if (activities.length > 0) {
-    const lines = [
-      "김성현의 대외활동, 해커톤·공모전 참가, 국제교류 및 해외 견학(싱가포르 연수) 전체 요약 목록",
-      ...activities.map(
-        (a: any) =>
-          `- [${a.metadata?.category || "활동"}] ${a.metadata?.activity_name || a.id}: ${String(a.content || "").trim()}`
-      ),
-    ];
-    portfolio.push({
-      id: "activity-summary-all",
-      title: "대외활동 및 연수 전체 요약",
-      content: lines.join("\n"),
-      docCategory: "profile",
-      documentType: "activity_summary",
-      section: "profile",
-      topic: "activity_summary",
-    });
-  }
-
-  const projects = Array.isArray(data.projects) ? data.projects : [];
-  if (projects.length > 0) {
-    const summaryLines = [
-      "프로젝트 포트폴리오 전체 요약",
-      "김성현의 대표 프로젝트들을 한눈에 볼 수 있도록 프로젝트명, 핵심 목적, 사용 기술을 정리한 문서입니다.",
-      ...projects.map(
-        (p: any) =>
-          `- ${p.project_name}: ${p.summary} (사용 기술: ${compact(p.technologies)})`
-      ),
-    ];
-    portfolio.push({
-      id: "project-summary-all",
-      title: "프로젝트 전체 요약",
-      content: summaryLines.join("\n"),
-      docCategory: "project",
-      documentType: "project_summary",
-      section: "summary",
-      projectId: "all",
-    });
-  }
-
-  for (const project of projects) {
-    const pid = String(project.project_id || "");
-    const pname = String(project.project_name || pid);
-    const period = project.period
-      ? `${project.period.start || ""} ~ ${project.period.end || "진행 중"}`
-      : "";
-    const devItems = Array.isArray(project.development) ? project.development : [];
-    const tsItems = Array.isArray(project.troubleshooting) ? project.troubleshooting : [];
-
-    const overviewLines = [
-      `프로젝트명: ${pname}`,
-      `요약: ${project.summary || ""}`,
-      `기간: ${period}`,
-      `역할: ${compact(project.role)}`,
-      `기술: ${compact(project.technologies)}`,
-      `팀원 및 역할: ${compact(project.team_members)}`,
-      `개발 동기: ${project.motivation?.content || ""}`,
-    ];
-    if (devItems.length > 0) {
-      overviewLines.push("주요 구현 요약:");
-      for (const item of devItems) {
-        let firstSentence = String(item.content || "").split(". ")[0].trim();
-        if (firstSentence && !firstSentence.endsWith(".")) firstSentence += ".";
-        overviewLines.push(`- ${item.title}: ${firstSentence}`);
+  for (const filename of files) {
+    const raw = fs.readFileSync(path.join(docsDir, filename), "utf-8");
+    const chunks = splitMarkdownByH2(raw, filename);
+    for (const chunk of chunks) {
+      if (chunk.docCategory === "personal") {
+        personal.push(chunk);
+      } else {
+        portfolio.push(chunk);
       }
     }
-    if (tsItems.length > 0) {
-      overviewLines.push("주요 트러블슈팅 성과:");
-      for (const item of tsItems) {
-        overviewLines.push(`- ${item.title}: ${item.result || ""}`);
-      }
-    }
-
-    portfolio.push({
-      id: `${pid}-overview`,
-      title: `${pname} 개요`,
-      content: overviewLines.join("\n"),
-      docCategory: "project",
-      documentType: "project",
-      section: "overview",
-      projectId: pid,
-    });
-
-    if (Array.isArray(project.team_members) && project.team_members.length > 0) {
-      portfolio.push({
-        id: `${pid}-team`,
-        title: `${pname} 팀원 및 역할`,
-        content: [
-          `프로젝트명: ${pname}`,
-          `${pname} 팀원 구성과 담당 역할`,
-          ...project.team_members.map((m: any) => `- ${m.name}: ${m.role}`),
-        ].join("\n"),
-        docCategory: "project",
-        documentType: "project",
-        section: "team",
-        projectId: pid,
-      });
-    }
-
-    for (const dev of devItems) {
-      portfolio.push({
-        id: String(dev.id || `${pid}-dev-${portfolio.length}`),
-        title: `${pname} - ${dev.title}`,
-        content: [
-          `프로젝트명: ${pname}`,
-          `개발 내용: ${dev.title}`,
-          `설명: ${dev.content}`,
-          `사용 기술: ${compact(dev.technologies)}`,
-        ].join("\n"),
-        docCategory: "project",
-        documentType: "project",
-        section: "development",
-        projectId: pid,
-      });
-    }
-
-    if (tsItems.length > 0) {
-      const tsSummaryLines = [
-        `프로젝트명: ${pname}`,
-        "이 문서는 프로젝트에서 겪은 문제, 해결 방법, 결과를 한 번에 정리합니다.",
-      ];
-      for (const ts of tsItems) {
-        tsSummaryLines.push(
-          `문제: ${ts.title}`,
-          `상황: ${ts.problem}`,
-          `해결 방법: ${ts.solution}`,
-          `결과: ${ts.result}`
-        );
-        portfolio.push({
-          id: String(ts.id || `${pid}-ts-${portfolio.length}`),
-          title: `${pname} - ${ts.title}`,
-          content: [
-            `프로젝트명: ${pname}`,
-            `트러블슈팅: ${ts.title}`,
-            `문제: ${ts.problem}`,
-            `해결 방법: ${ts.solution}`,
-            `결과: ${ts.result}`,
-            `관련 기술: ${compact(ts.technologies)}`,
-          ].join("\n"),
-          docCategory: "project",
-          documentType: "project",
-          section: "troubleshooting",
-          projectId: pid,
-        });
-      }
-      portfolio.push({
-        id: `${pid}-troubleshooting-summary`,
-        title: `${pname} 문제 해결 요약`,
-        content: tsSummaryLines.join("\n"),
-        docCategory: "project",
-        documentType: "project",
-        section: "troubleshooting_summary",
-        projectId: pid,
-      });
-    }
-
-    for (const lesson of project.lessons || []) {
-      portfolio.push({
-        id: String(lesson.id || `${pid}-lesson-${portfolio.length}`),
-        title: `${pname} - ${lesson.title}`,
-        content: [
-          `프로젝트명: ${pname}`,
-          `배운 점: ${lesson.title}`,
-          `내용: ${lesson.content}`,
-        ].join("\n"),
-        docCategory: "project",
-        documentType: "project",
-        section: "lessons",
-        projectId: pid,
-      });
-    }
-  }
-
-  for (const item of pData.personal || []) {
-    const meta = item.metadata || {};
-    personal.push({
-      id: String(item.id || `personal-${personal.length}`),
-      title: String(meta.topic || item.id || "개인 소개"),
-      content: String(item.content || ""),
-      docCategory: "personal",
-      documentType: "personal",
-      section: "personal",
-      topic: String(meta.topic || ""),
-    });
   }
 
   return { portfolio, personal };

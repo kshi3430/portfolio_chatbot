@@ -9,62 +9,59 @@
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
   --font-display: "Space Grotesk", "Pretendard", sans-serif;
 
-  /* Emerald Nocturne theme colors */
-  --color-void: #030806;
-  --color-surface-dim: #101914;
-  --color-surface-bright: #343b36;
-  --color-surface-lowest: #09100c;
-  --color-surface-low: #17221b;
-  --color-surface-base: #1c2720;
-  --color-surface-high: #26342b;
-  --color-surface-highest: #314037;
-  --color-on-surface: #f2f7f3;
-  --color-on-surface-variant: #d4e0d7;
-  --color-primary-emerald: #26cf96;
-  --color-primary-glow: #5eead4;
-  --color-on-primary-dark: #003824;
+  /* Monochrome White & Black theme colors */
+  --color-void: #ffffff;
+  --color-surface-dim: #f9fafb;
+  --color-surface-bright: #ffffff;
+  --color-surface-lowest: #ffffff;
+  --color-surface-low: #f9fafb;
+  --color-surface-base: #f3f4f6;
+  --color-surface-high: #e5e7eb;
+  --color-surface-highest: #d1d5db;
+  --color-on-surface: #0a0a0a;
+  --color-on-surface-variant: #71717a;
+  --color-primary-emerald: #111827;
+  --color-primary-glow: #374151;
+  --color-on-primary-dark: #ffffff;
 }
 
 @layer base {
   :root {
-    color-scheme: dark;
+    color-scheme: light;
   }
 
   body {
-    background-color: var(--color-void);
-    color: var(--color-on-surface);
+    background-color: #ffffff;
+    color: #374151;
     font-family: var(--font-sans);
     line-height: 1.65;
     word-break: keep-all;
     overflow-wrap: break-word;
     -webkit-font-smoothing: antialiased;
-    transition: background-color 300ms ease, color 300ms ease;
   }
 }
 
 html.light {
   color-scheme: light;
-  --color-void: #f4f8f4;
-  --color-surface-dim: #e5eee7;
+  --color-void: #ffffff;
+  --color-surface-dim: #f9fafb;
   --color-surface-bright: #ffffff;
-  --color-surface-lowest: #f8fbf8;
-  --color-surface-low: #edf4ef;
-  --color-surface-base: #e3ede6;
-  --color-surface-high: #d8e6dc;
-  --color-surface-highest: #cadccf;
-  --color-on-surface: #10251a;
-  --color-on-surface-variant: #53675a;
-  --color-primary-emerald: #087f5b;
-  --color-primary-glow: #0a9f70;
+  --color-surface-lowest: #ffffff;
+  --color-surface-low: #f9fafb;
+  --color-surface-base: #f3f4f6;
+  --color-surface-high: #e5e7eb;
+  --color-surface-highest: #d1d5db;
+  --color-on-surface: #0a0a0a;
+  --color-on-surface-variant: #71717a;
+  --color-primary-emerald: #111827;
+  --color-primary-glow: #374151;
   --color-on-primary-dark: #ffffff;
 }
 
 html.light body {
-  background-image:
-    radial-gradient(circle at 12% 8%, rgba(36, 181, 125, 0.13), transparent 30%),
-    radial-gradient(circle at 88% 38%, rgba(44, 148, 132, 0.10), transparent 35%),
-    linear-gradient(160deg, #f8fbf8 0%, #eef6f0 48%, #f7faf7 100%);
-  background-attachment: fixed;
+  background-color: #ffffff;
+  background-image: none;
+  color: #374151;
 }
 
 .noise-overlay {
@@ -95,33 +92,41 @@ html.light body {
 }
 
 html.light .glass-card {
-  background: rgba(255, 255, 255, 0.72);
-  border-color: rgba(20, 83, 55, 0.12);
-  box-shadow: 0 18px 50px -30px rgba(22, 101, 69, 0.25);
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 8px 24px -14px rgba(15, 23, 42, 0.07);
 }
 
 html.light .glass-card-hover:hover {
-  background: rgba(255, 255, 255, 0.9);
-  border-color: rgba(8, 127, 91, 0.25);
-  box-shadow: 0 16px 36px -24px rgba(8, 127, 91, 0.3);
+  background: #f9fafb;
+  border-color: #d1d5db;
+  box-shadow: 0 12px 28px -14px rgba(15, 23, 42, 0.1);
 }
 
 html.light .noise-overlay {
-  opacity: 0.018;
-  mix-blend-mode: multiply;
+  opacity: 0;
+  display: none;
 }
 
 html.light .atmospheric-glow {
-  background: radial-gradient(circle, rgba(16, 185, 129, 0.16) 0%, rgba(116, 190, 171, 0.07) 48%, rgba(244, 248, 244, 0) 72%);
+  display: none;
 }
 
 html.light header,
 html.light footer {
-  border-color: rgba(20, 83, 55, 0.1);
+  border-color: #e5e7eb;
+}
+
+html.light section {
+  border-color: #e5e7eb;
 }
 
 html.light ::-webkit-scrollbar-thumb {
-  background: rgba(8, 127, 91, 0.28);
+  background: rgba(17, 24, 39, 0.18);
+}
+
+html.light ::-webkit-scrollbar-thumb:hover {
+  background: rgba(17, 24, 39, 0.34);
 }
 
 .glass-card-hover {
@@ -151,10 +156,10 @@ html.light ::-webkit-scrollbar-thumb {
 
 html.light .project-card-interactive:hover,
 html.light .project-card-interactive:focus-visible {
-  background: rgba(255, 255, 255, 0.96);
-  border-color: rgba(8, 127, 91, 0.48);
-  box-shadow: 0 24px 52px -18px rgba(8, 127, 91, 0.28),
-    0 0 0 1px rgba(8, 127, 91, 0.16);
+  background: #ffffff;
+  border-color: #d1d5db;
+  box-shadow: 0 18px 40px -18px rgba(15, 23, 42, 0.12),
+    0 0 0 1px #e5e7eb;
 }
 
 .modal-backdrop {
@@ -163,7 +168,7 @@ html.light .project-card-interactive:focus-visible {
 }
 
 html.light .modal-backdrop {
-  background: rgba(16, 37, 26, 0.36);
+  background: rgba(15, 23, 42, 0.36);
   backdrop-filter: blur(8px);
 }
 
@@ -174,9 +179,9 @@ html.light .modal-backdrop {
 }
 
 html.light .modal-shell {
-  background: #fbfdfb;
-  border: 1px solid rgba(16, 37, 26, 0.12);
-  box-shadow: 0 32px 90px -24px rgba(16, 37, 26, 0.28);
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 28px 72px -18px rgba(15, 23, 42, 0.18);
 }
 
 .modal-card {
@@ -185,8 +190,8 @@ html.light .modal-shell {
 }
 
 html.light .modal-card {
-  background: #f2f7f3;
-  border: 1px solid rgba(20, 83, 55, 0.1);
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
 }
 
 .modal-problem-box {
@@ -216,7 +221,7 @@ html.light .modal-problem-badge {
 
 html.light .modal-solution-box {
   background: #ffffff;
-  border: 1px solid rgba(20, 83, 55, 0.12);
+  border: 1px solid #e5e7eb;
 }
 
 .modal-result-box {
@@ -238,13 +243,13 @@ html.light .modal-solution-box {
 
 @keyframes navHighlightPulseLight {
   0% {
-    box-shadow: 0 0 0 2px rgba(8, 127, 91, 0.45), 0 18px 42px -12px rgba(8, 127, 91, 0.35);
+    box-shadow: 0 0 0 2px rgba(17, 24, 39, 0.22), 0 14px 32px -14px rgba(15, 23, 42, 0.14);
   }
   50% {
-    box-shadow: 0 0 0 3px rgba(8, 127, 91, 0.7), 0 22px 48px -10px rgba(8, 127, 91, 0.48);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.32), 0 18px 36px -12px rgba(79, 70, 229, 0.16);
   }
   100% {
-    box-shadow: 0 0 0 2px rgba(8, 127, 91, 0.4), 0 16px 38px -12px rgba(8, 127, 91, 0.3);
+    box-shadow: 0 0 0 2px rgba(17, 24, 39, 0.18), 0 12px 28px -14px rgba(15, 23, 42, 0.12);
   }
 }
 
@@ -254,13 +259,13 @@ html.light .modal-solution-box {
 }
 
 html.light .nav-highlight-glow {
-  border-color: rgba(8, 127, 91, 0.75) !important;
+  border-color: #111827 !important;
   animation: navHighlightPulseLight 1.6s ease-in-out infinite;
 }
 
 html.light .modal-result-box {
-  background: #eaf7f0;
-  border: 1px solid rgba(8, 127, 91, 0.22);
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
 }
 
 /* Custom scrollbar */

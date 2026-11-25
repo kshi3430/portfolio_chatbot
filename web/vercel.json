@@ -2,6 +2,11 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "npx vite build",
   "outputDirectory": "dist",
+  "functions": {
+    "api/chat.ts": {
+      "includeFiles": "data/docs/*.md"
+    }
+  },
   "rewrites": [
     {
       "source": "/((?!api/).*)",

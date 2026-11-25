@@ -183,17 +183,32 @@ export function Projects({
   return (
     <section id="projects" className="py-24 md:py-36 border-t border-white/5 relative scroll-mt-24">
       <div>
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-14 md:mb-16 gap-4">
-          <div>
-            <div className="flex items-center gap-1.5 font-mono text-xs text-primary-emerald tracking-widest uppercase mb-2"><Layers className="w-3.5 h-3.5" /> FEATURED PROJECTS</div>
-            <h3 className="font-display text-3xl font-bold tracking-tight">Project</h3>
-          </div>
-          <p className="text-on-surface-variant text-sm max-w-md leading-relaxed">모델 적용에 그치지 않고 데이터 구조, 워크플로, API와 실패 복구까지 직접 고민했습니다.</p>
+        <div className="mb-14 md:mb-16">
+          <div className="flex items-center gap-1.5 font-mono text-xs text-primary-emerald [:is(.light)_&]:text-violet-600 tracking-widest uppercase mb-2"><Layers className="w-3.5 h-3.5" /> FEATURED PROJECTS</div>
+          <h3 className="font-display text-3xl font-bold tracking-tight text-on-surface">Project</h3>
         </div>
 
         <div className="grid grid-cols-1 gap-9 md:gap-12">
           {PROJECTS_DATA.map((project, idx) => {
             const Icon = PROJECT_ICONS[project.id as keyof typeof PROJECT_ICONS];
+            const isCapTeam = project.id === "capteam";
+            const lightAccent = isCapTeam
+              ? {
+                  glowBg: "[:is(.light)_&]:from-indigo-500/0 [:is(.light)_&]:via-indigo-500/0 [:is(.light)_&]:to-indigo-500/[0.04]",
+                  orb: "[:is(.light)_&]:hidden",
+                  iconBox: "[:is(.light)_&]:bg-indigo-50 [:is(.light)_&]:border-indigo-200 [:is(.light)_&]:text-indigo-600 [:is(.light)_&]:group-hover:bg-indigo-100 [:is(.light)_&]:group-hover:border-indigo-300 [:is(.light)_&]:group-hover:shadow-none",
+                  badge: "[:is(.light)_&]:text-indigo-700 [:is(.light)_&]:bg-indigo-50 [:is(.light)_&]:border-indigo-200 [:is(.light)_&]:group-hover:border-indigo-300 [:is(.light)_&]:group-hover:bg-indigo-100/70",
+                  titleHover: "[:is(.light)_&]:group-hover:text-indigo-700",
+                  arrow: "[:is(.light)_&]:border-[#E5E7EB] [:is(.light)_&]:bg-[#F9FAFB] [:is(.light)_&]:text-[#111827] [:is(.light)_&]:group-hover:bg-[#111827] [:is(.light)_&]:group-hover:text-white [:is(.light)_&]:group-hover:border-[#111827] [:is(.light)_&]:group-hover:shadow-none",
+                }
+              : {
+                  glowBg: "[:is(.light)_&]:from-orange-500/0 [:is(.light)_&]:via-orange-500/0 [:is(.light)_&]:to-orange-500/[0.04]",
+                  orb: "[:is(.light)_&]:hidden",
+                  iconBox: "[:is(.light)_&]:bg-orange-50 [:is(.light)_&]:border-orange-200 [:is(.light)_&]:text-orange-600 [:is(.light)_&]:group-hover:bg-orange-100 [:is(.light)_&]:group-hover:border-orange-300 [:is(.light)_&]:group-hover:shadow-none",
+                  badge: "[:is(.light)_&]:text-orange-700 [:is(.light)_&]:bg-orange-50 [:is(.light)_&]:border-orange-200 [:is(.light)_&]:group-hover:border-orange-300 [:is(.light)_&]:group-hover:bg-orange-100/70",
+                  titleHover: "[:is(.light)_&]:group-hover:text-orange-700",
+                  arrow: "[:is(.light)_&]:border-[#E5E7EB] [:is(.light)_&]:bg-[#F9FAFB] [:is(.light)_&]:text-[#111827] [:is(.light)_&]:group-hover:bg-[#111827] [:is(.light)_&]:group-hover:text-white [:is(.light)_&]:group-hover:border-[#111827] [:is(.light)_&]:group-hover:shadow-none",
+                };
             return (
               <motion.button
                 key={project.id}
@@ -205,32 +220,32 @@ export function Projects({
                 transition={{ delay: idx * 0.08, duration: 0.4 }}
                 onClick={() => setSelectedProject(project)}
                 aria-label={`${project.title} 프로젝트 상세 보기`}
-                className="text-left glass-card project-card-interactive rounded-3xl p-8 sm:p-10 md:p-12 min-h-[340px] flex flex-col justify-between group overflow-hidden relative cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-emerald/70"
+                className="text-left glass-card project-card-interactive rounded-3xl p-8 sm:p-10 md:p-12 min-h-[340px] flex flex-col justify-between group overflow-hidden relative cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-emerald/70 [:is(.light)_&]:focus-visible:ring-[#111827]/40"
               >
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary-emerald/0 via-primary-emerald/0 to-primary-emerald/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="pointer-events-none absolute -right-14 -top-14 w-56 h-56 rounded-full bg-primary-emerald/10 blur-3xl group-hover:scale-125 group-hover:bg-primary-emerald/25 transition-all duration-500" />
+                <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br from-primary-emerald/0 via-primary-emerald/0 to-primary-emerald/10 ${lightAccent.glowBg} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+                <div className={`pointer-events-none absolute -right-14 -top-14 w-56 h-56 rounded-full bg-primary-emerald/10 ${lightAccent.orb} blur-3xl group-hover:scale-125 group-hover:bg-primary-emerald/25 transition-all duration-500`} />
                 <div className="relative">
                   <div className="flex items-start justify-between gap-4 mb-10">
-                    <div className="w-12 h-12 rounded-2xl bg-primary-emerald/10 border border-primary-emerald/25 flex items-center justify-center text-primary-emerald shrink-0 group-hover:scale-110 group-hover:bg-primary-emerald/20 group-hover:border-primary-emerald/60 group-hover:shadow-[0_0_24px_rgba(16,185,129,0.35)] transition-all duration-300">
+                    <div className={`w-12 h-12 rounded-2xl bg-primary-emerald/10 border border-primary-emerald/25 flex items-center justify-center text-primary-emerald shrink-0 group-hover:scale-110 group-hover:bg-primary-emerald/20 group-hover:border-primary-emerald/60 group-hover:shadow-[0_0_24px_rgba(16,185,129,0.35)] ${lightAccent.iconBox} transition-all duration-300`}>
                       <Icon className="w-6 h-6" />
                     </div>
-                    <span className="font-mono text-xs text-primary-glow bg-primary-emerald/10 border border-primary-emerald/20 rounded-full px-3 py-1 group-hover:border-primary-emerald/45 group-hover:bg-primary-emerald/15 transition-colors duration-300">
+                    <span className={`font-mono text-xs text-primary-glow bg-primary-emerald/10 border border-primary-emerald/20 rounded-full px-3 py-1 group-hover:border-primary-emerald/45 group-hover:bg-primary-emerald/15 ${lightAccent.badge} transition-colors duration-300`}>
                       {project.highlight}
                     </span>
                   </div>
-                  <div className="font-mono text-xs text-on-surface-variant mb-2">{project.period}</div>
-                  <h4 className="font-display text-2xl md:text-3xl font-bold mb-4 group-hover:text-primary-glow transition-colors duration-300">{project.title}</h4>
-                  <p className="text-on-surface/85 text-base leading-8 max-w-3xl">{project.description}</p>
+                  <div className="font-mono text-xs text-on-surface-variant [:is(.light)_&]:text-[#71717A] mb-2">{project.period}</div>
+                  <h4 className={`font-display text-2xl md:text-3xl font-bold mb-4 text-on-surface group-hover:text-primary-glow ${lightAccent.titleHover} transition-colors duration-300`}>{project.title}</h4>
+                  <p className="text-on-surface/85 [:is(.light)_&]:text-[#374151] text-base leading-8 max-w-3xl">{project.description}</p>
                 </div>
-                <div className="relative flex items-center justify-between gap-4 mt-10 pt-6 border-t border-white/5 group-hover:border-primary-emerald/20 transition-colors duration-300">
+                <div className="relative flex items-center justify-between gap-4 mt-10 pt-6 border-t border-white/5 [:is(.light)_&]:border-[#E5E7EB] group-hover:border-primary-emerald/20 [:is(.light)_&]:group-hover:border-[#D1D5DB] transition-colors duration-300">
                   <div className="flex flex-wrap gap-2">
                     {project.tags.map(tag => (
-                      <span key={tag} className="font-mono text-[11px] text-on-surface-variant bg-surface-high/60 px-2.5 py-1 rounded-md group-hover:bg-surface-high transition-colors duration-300">
+                      <span key={tag} className="font-mono text-[11px] text-on-surface-variant [:is(.light)_&]:text-[#374151] bg-surface-high/60 [:is(.light)_&]:bg-[#F9FAFB] [:is(.light)_&]:border [:is(.light)_&]:border-[#E5E7EB] px-2.5 py-1 rounded-md group-hover:bg-surface-high [:is(.light)_&]:group-hover:bg-[#F3F4F6] transition-colors duration-300">
                         #{tag}
                       </span>
                     ))}
                   </div>
-                  <span className="w-9 h-9 rounded-full border border-primary-emerald/25 bg-primary-emerald/10 text-primary-emerald flex items-center justify-center shrink-0 group-hover:bg-primary-emerald group-hover:text-void group-hover:border-primary-emerald group-hover:scale-110 group-hover:shadow-[0_0_20px_rgba(16,185,129,0.45)] transition-all duration-300">
+                  <span className={`w-9 h-9 rounded-full border border-primary-emerald/25 bg-primary-emerald/10 text-primary-emerald flex items-center justify-center shrink-0 group-hover:bg-primary-emerald group-hover:text-void group-hover:border-primary-emerald group-hover:scale-110 group-hover:shadow-[0_0_20px_rgba(16,185,129,0.45)] ${lightAccent.arrow} transition-all duration-300`}>
                     <MoveRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform duration-300" />
                   </span>
                 </div>
@@ -245,8 +260,8 @@ export function Projects({
           <AnimatePresence>
             {selectedProject && (
               <div
-                className={`fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 md:p-8 ${
-                  isChatOpen ? "lg:justify-start lg:pr-[480px]" : ""
+                className={`fixed inset-0 z-[130] flex items-center justify-center p-4 sm:p-6 md:p-8 ${
+                  isChatOpen ? "lg:z-[110] lg:justify-start lg:pr-[480px]" : ""
                 }`}
               >
                 <motion.div
@@ -271,10 +286,10 @@ export function Projects({
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2.5 mb-2">
-                          <span className="inline-flex items-center gap-1.5 text-[11px] font-mono text-primary-emerald tracking-widest uppercase">
+                          <span className="inline-flex items-center gap-1.5 text-[11px] font-mono text-primary-emerald [:is(.light)_&]:text-indigo-600 tracking-widest uppercase">
                             <Sparkles className="w-3.5 h-3.5" /> PROJECT DEEP DIVE
                           </span>
-                          <span className="font-mono text-[11px] text-primary-emerald bg-primary-emerald/10 border border-primary-emerald/25 rounded-full px-2.5 py-0.5">
+                          <span className="font-mono text-[11px] text-primary-emerald [:is(.light)_&]:text-orange-700 bg-primary-emerald/10 [:is(.light)_&]:bg-orange-50 border border-primary-emerald/25 [:is(.light)_&]:border-orange-200 rounded-full px-2.5 py-0.5">
                             {selectedProject.highlight}
                           </span>
                         </div>
@@ -286,7 +301,7 @@ export function Projects({
                       <button
                         onClick={() => setSelectedProject(null)}
                         aria-label="닫기"
-                        className="w-9 h-9 rounded-full bg-surface-high/80 hover:bg-surface-high border border-on-surface/10 flex items-center justify-center text-on-surface cursor-pointer shrink-0 transition-colors"
+                        className="w-9 h-9 rounded-full bg-surface-high/80 [:is(.light)_&]:bg-[#F9FAFB] hover:bg-surface-high [:is(.light)_&]:hover:bg-[#F3F4F6] border border-on-surface/10 [:is(.light)_&]:border-[#E5E7EB] flex items-center justify-center text-on-surface cursor-pointer shrink-0 transition-colors"
                       >
                         <X className="w-4 h-4" />
                       </button>
@@ -304,7 +319,7 @@ export function Projects({
                           key={tab.id}
                           type="button"
                           onClick={() => scrollToSection(tab.id)}
-                          className="font-mono text-xs px-3 py-1.5 rounded-lg bg-surface-high/60 hover:bg-primary-emerald/15 hover:text-primary-emerald text-on-surface-variant border border-on-surface/10 hover:border-primary-emerald/30 transition-colors cursor-pointer"
+                          className="font-mono text-xs px-3 py-1.5 rounded-lg bg-surface-high/60 [:is(.light)_&]:bg-[#F9FAFB] hover:bg-primary-emerald/15 [:is(.light)_&]:hover:bg-[#111827] hover:text-primary-emerald [:is(.light)_&]:hover:text-white text-on-surface-variant [:is(.light)_&]:text-[#374151] border border-on-surface/10 [:is(.light)_&]:border-[#E5E7EB] hover:border-primary-emerald/30 [:is(.light)_&]:hover:border-[#111827] transition-colors cursor-pointer"
                         >
                           {tab.label}
                         </button>
@@ -317,37 +332,37 @@ export function Projects({
                     {/* 01 Overview & Metadata Grid */}
                     <section id="modal-overview" className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                       <div className="lg:col-span-7 space-y-5">
-                        <p className="text-base md:text-lg font-medium text-primary-emerald leading-relaxed">
+                        <p className="text-base md:text-lg font-medium text-primary-emerald [:is(.light)_&]:text-[#0A0A0A] leading-relaxed">
                           {selectedProject.description}
                         </p>
                         <div className="modal-card rounded-2xl p-6">
-                          <div className="font-mono text-xs text-primary-emerald tracking-widest mb-2">01 · WHY</div>
+                          <div className="font-mono text-xs text-primary-emerald [:is(.light)_&]:text-indigo-600 tracking-widest mb-2">01 · WHY</div>
                           <h4 className="font-display text-lg font-bold mb-3 text-on-surface">개발 동기</h4>
-                          <p className="text-on-surface/90 leading-7 text-sm md:text-[15px]">
+                          <p className="text-on-surface/90 [:is(.light)_&]:text-[#374151] leading-7 text-sm md:text-[15px]">
                             {selectedProject.motivation}
                           </p>
                         </div>
                       </div>
 
                       <div className="lg:col-span-5 modal-card rounded-2xl p-6 space-y-5">
-                        <div className="grid grid-cols-2 gap-4 pb-4 border-b border-on-surface/10">
+                        <div className="grid grid-cols-2 gap-4 pb-4 border-b border-on-surface/10 [:is(.light)_&]:border-[#E5E7EB]">
                           <div>
-                            <div className="font-mono text-[11px] text-primary-emerald tracking-wider mb-1">PERIOD</div>
+                            <div className="font-mono text-[11px] text-primary-emerald [:is(.light)_&]:text-[#71717A] tracking-wider mb-1">PERIOD</div>
                             <div className="text-sm font-medium text-on-surface">{selectedProject.period}</div>
                           </div>
                           <div>
-                            <div className="font-mono text-[11px] text-primary-emerald tracking-wider mb-1">MY ROLE</div>
+                            <div className="font-mono text-[11px] text-primary-emerald [:is(.light)_&]:text-[#71717A] tracking-wider mb-1">MY ROLE</div>
                             <div className="text-sm font-medium text-on-surface">{selectedProject.role}</div>
                           </div>
                         </div>
 
                         <div>
-                          <div className="font-mono text-[11px] text-primary-emerald tracking-wider mb-2.5">TECH STACK</div>
+                          <div className="font-mono text-[11px] text-primary-emerald [:is(.light)_&]:text-[#71717A] tracking-wider mb-2.5">TECH STACK</div>
                           <div className="flex flex-wrap gap-1.5">
                             {selectedProject.tags.map(tag => (
                               <span
                                 key={tag}
-                                className="text-xs font-mono bg-primary-emerald/10 text-primary-emerald border border-primary-emerald/20 rounded-md px-2.5 py-1"
+                                className="text-xs font-mono bg-primary-emerald/10 [:is(.light)_&]:bg-white text-primary-emerald [:is(.light)_&]:text-[#374151] border border-primary-emerald/20 [:is(.light)_&]:border-[#E5E7EB] rounded-md px-2.5 py-1"
                               >
                                 {tag}
                               </span>
@@ -356,12 +371,12 @@ export function Projects({
                         </div>
 
                         <div>
-                          <div className="font-mono text-[11px] text-primary-emerald tracking-wider mb-2.5">TEAM</div>
+                          <div className="font-mono text-[11px] text-primary-emerald [:is(.light)_&]:text-[#71717A] tracking-wider mb-2.5">TEAM</div>
                           <div className="flex flex-wrap gap-2">
                             {selectedProject.team.map(member => (
                               <span
                                 key={member}
-                                className="text-xs text-on-surface/90 bg-surface-high/80 border border-on-surface/15 rounded-lg px-2.5 py-1.5"
+                                className="text-xs text-on-surface/90 [:is(.light)_&]:text-[#374151] bg-surface-high/80 [:is(.light)_&]:bg-white border border-on-surface/15 [:is(.light)_&]:border-[#E5E7EB] rounded-lg px-2.5 py-1.5"
                               >
                                 {member}
                               </span>
@@ -370,13 +385,13 @@ export function Projects({
                         </div>
 
                         {(selectedProject.demoUrl || selectedProject.githubUrl) && (
-                          <div className="flex flex-wrap gap-2.5 pt-2 border-t border-on-surface/10">
+                          <div className="flex flex-wrap gap-2.5 pt-2 border-t border-on-surface/10 [:is(.light)_&]:border-[#E5E7EB]">
                             {selectedProject.demoUrl && (
                               <a
                                 href={selectedProject.demoUrl}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="inline-flex items-center gap-2 bg-primary-emerald text-void font-semibold text-xs px-3.5 py-2 rounded-xl"
+                                className="inline-flex items-center gap-2 bg-primary-emerald [:is(.light)_&]:bg-[#111827] text-void [:is(.light)_&]:text-white font-semibold text-xs px-3.5 py-2 rounded-xl"
                               >
                                 <ExternalLink className="w-3.5 h-3.5" /> 모델 보기
                               </a>
@@ -386,7 +401,7 @@ export function Projects({
                                 href={selectedProject.githubUrl}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="inline-flex items-center gap-2 bg-surface-high text-xs font-medium px-3.5 py-2 rounded-xl"
+                                className="inline-flex items-center gap-2 bg-surface-high [:is(.light)_&]:bg-white [:is(.light)_&]:border [:is(.light)_&]:border-[#E5E7EB] [:is(.light)_&]:text-[#111827] text-xs font-medium px-3.5 py-2 rounded-xl"
                               >
                                 <Github className="w-3.5 h-3.5" /> GitHub
                               </a>
@@ -400,10 +415,10 @@ export function Projects({
                     <section id="modal-build">
                       <div className="flex items-end justify-between gap-4 mb-6">
                         <div>
-                          <div className="font-mono text-xs text-primary-emerald tracking-widest mb-1.5">02 · BUILD</div>
+                          <div className="font-mono text-xs text-primary-emerald [:is(.light)_&]:text-violet-600 tracking-widest mb-1.5">02 · BUILD</div>
                           <h4 className="font-display text-2xl font-bold text-on-surface">개발 내용</h4>
                         </div>
-                        <span className="font-mono text-xs text-on-surface-variant">
+                        <span className="font-mono text-xs text-on-surface-variant [:is(.light)_&]:text-[#71717A]">
                           {selectedProject.development.length} Modules
                         </span>
                       </div>
@@ -425,8 +440,8 @@ export function Projects({
                                   : ""
                               }`}
                             >
-                              <div className="flex items-center gap-3 pb-3 border-b border-on-surface/10">
-                                <span className="font-mono text-xs font-semibold text-primary-emerald bg-primary-emerald/10 border border-primary-emerald/25 rounded-lg px-2.5 py-1">
+                              <div className="flex items-center gap-3 pb-3 border-b border-on-surface/10 [:is(.light)_&]:border-[#E5E7EB]">
+                                <span className="font-mono text-xs font-semibold text-primary-emerald [:is(.light)_&]:text-indigo-700 bg-primary-emerald/10 [:is(.light)_&]:bg-indigo-50 border border-primary-emerald/25 [:is(.light)_&]:border-indigo-200 rounded-lg px-2.5 py-1">
                                   0{index + 1}
                                 </span>
                                 <h5 className="font-display text-base font-bold text-on-surface">{item.title}</h5>
@@ -435,9 +450,9 @@ export function Projects({
                                 {item.details.map(detail => (
                                   <li
                                     key={detail}
-                                    className="text-[14.5px] text-on-surface/90 leading-7 flex items-start gap-2.5"
+                                    className="text-[14.5px] text-on-surface/90 [:is(.light)_&]:text-[#374151] leading-7 flex items-start gap-2.5"
                                   >
-                                    <span className="w-1.5 h-1.5 rounded-full bg-primary-emerald shrink-0 mt-2.5" />
+                                    <span className="w-1.5 h-1.5 rounded-full bg-primary-emerald [:is(.light)_&]:bg-[#111827] shrink-0 mt-2.5" />
                                     <span>{detail}</span>
                                   </li>
                                 ))}
@@ -452,12 +467,12 @@ export function Projects({
                     <section id="modal-troubleshooting">
                       <div className="flex items-end justify-between gap-4 mb-6">
                         <div>
-                          <div className="font-mono text-xs text-primary-emerald tracking-widest mb-1.5">
+                          <div className="font-mono text-xs text-primary-emerald [:is(.light)_&]:text-orange-600 tracking-widest mb-1.5">
                             03 · TROUBLESHOOTING
                           </div>
                           <h4 className="font-display text-2xl font-bold text-on-surface">문제와 해결</h4>
                         </div>
-                        <span className="font-mono text-xs text-on-surface-variant">
+                        <span className="font-mono text-xs text-on-surface-variant [:is(.light)_&]:text-[#71717A]">
                           {selectedProject.troubleshooting.length} Cases
                         </span>
                       </div>
@@ -474,7 +489,7 @@ export function Projects({
                             }`}
                           >
                             <div className="flex flex-wrap items-center gap-3">
-                              <span className="font-mono text-[11px] font-semibold text-primary-emerald bg-primary-emerald/10 border border-primary-emerald/25 rounded-full px-3 py-1">
+                              <span className="font-mono text-[11px] font-semibold text-primary-emerald [:is(.light)_&]:text-orange-700 bg-primary-emerald/10 [:is(.light)_&]:bg-orange-50 border border-primary-emerald/25 [:is(.light)_&]:border-orange-200 rounded-full px-3 py-1">
                                 CASE 0{idx + 1}
                               </span>
                               <h5 className="font-display text-lg font-bold text-on-surface">{item.title}</h5>
@@ -485,23 +500,23 @@ export function Projects({
                                 <span className="inline-block font-mono text-[11px] font-semibold px-2.5 py-0.5 rounded-md modal-problem-badge">
                                   PROBLEM
                                 </span>
-                                <p className="text-[14.5px] leading-7 text-on-surface/90">{item.problem}</p>
+                                <p className="text-[14.5px] leading-7 text-on-surface/90 [:is(.light)_&]:text-[#374151]">{item.problem}</p>
                               </div>
 
                               <div className="modal-solution-box rounded-xl p-4 md:p-5 space-y-2.5">
-                                <span className="inline-block font-mono text-[11px] font-semibold px-2.5 py-0.5 rounded-md bg-primary-emerald/15 text-primary-emerald">
+                                <span className="inline-block font-mono text-[11px] font-semibold px-2.5 py-0.5 rounded-md bg-primary-emerald/15 [:is(.light)_&]:bg-emerald-50 text-primary-emerald [:is(.light)_&]:text-emerald-700 [:is(.light)_&]:border [:is(.light)_&]:border-emerald-200">
                                   SOLUTION
                                 </span>
-                                <p className="text-[14.5px] leading-7 text-on-surface/90">{item.solution}</p>
+                                <p className="text-[14.5px] leading-7 text-on-surface/90 [:is(.light)_&]:text-[#374151]">{item.solution}</p>
                               </div>
                             </div>
 
                             {item.result && (
                               <div className="modal-result-box rounded-xl px-4 md:px-5 py-3.5 flex flex-col sm:flex-row sm:items-start gap-2.5 sm:gap-4">
-                                <span className="inline-flex self-start font-mono text-[11px] font-semibold px-2.5 py-0.5 rounded-md bg-primary-emerald text-on-primary-dark shrink-0 mt-0.5">
+                                <span className="inline-flex self-start font-mono text-[11px] font-semibold px-2.5 py-0.5 rounded-md bg-primary-emerald [:is(.light)_&]:bg-[#111827] text-on-primary-dark [:is(.light)_&]:text-white shrink-0 mt-0.5">
                                   RESULT
                                 </span>
-                                <p className="text-[14.5px] leading-7 font-medium text-on-surface">{item.result}</p>
+                                <p className="text-[14.5px] leading-7 font-medium text-on-surface [:is(.light)_&]:text-[#0A0A0A]">{item.result}</p>
                               </div>
                             )}
                           </div>
@@ -513,7 +528,7 @@ export function Projects({
                     {selectedProject.learnings && (
                       <section id="modal-learned">
                         <div className="mb-6">
-                          <div className="font-mono text-xs text-primary-emerald tracking-widest mb-1.5">
+                          <div className="font-mono text-xs text-primary-emerald [:is(.light)_&]:text-emerald-600 tracking-widest mb-1.5">
                             04 · LEARNED
                           </div>
                           <h4 className="font-display text-2xl font-bold text-on-surface">배운 점</h4>
@@ -521,8 +536,8 @@ export function Projects({
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {selectedProject.learnings.map(item => (
                             <div key={item} className="modal-card rounded-2xl p-5 flex items-start gap-3.5">
-                              <CheckCircle2 className="w-5 h-5 text-primary-emerald shrink-0 mt-0.5" />
-                              <p className="text-[14.5px] text-on-surface/90 leading-7">{item}</p>
+                              <CheckCircle2 className="w-5 h-5 text-primary-emerald [:is(.light)_&]:text-emerald-600 shrink-0 mt-0.5" />
+                              <p className="text-[14.5px] text-on-surface/90 [:is(.light)_&]:text-[#374151] leading-7">{item}</p>
                             </div>
                           ))}
                         </div>
