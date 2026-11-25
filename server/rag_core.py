@@ -376,7 +376,22 @@ class RAGEngine:
 
         # 1. Upstage LLM & Embedding 클라이언트
         print(f"🔧 LLM 초기화: {upstage_model} ({base_url})")
-        self.client = OpenAI(api_key=upstage_api_key, base_url=base_url, timeout=30.0)
+        raw_client = OpenAI(api_key=upstage_api_key, base_url=base_url, timeout=30.0)
+        langsmith_enabled = (
+            os.getenv("LANGSMITH_TRACING", "").lower() == "true"
+            or os.getenv("LANGCHAIN_TRACING_V2", "").lower() == "true"
+        ) and bool(os.getenv("LANGSMITH_API_KEY") or os.getenv("LANGCHAIN_API_KEY"))
+        if langsmith_enabled:
+            try:
+                from langsmith.wrappers import wrap_openai
+
+                self.client = wrap_openai(raw_client)
+                print("🔭 LangSmith OpenAI 트레이싱 활성화")
+            except Exception as exc:
+                print(f"⚠️ LangSmith wrap_openai 초기화 실패 (트레이싱 비활성화): {exc}")
+                self.client = raw_client
+        else:
+            self.client = raw_client
         print(f"🔧 임베딩 모델 초기화: passage={passage_embedding_model}, query={query_embedding_model}")
         self.embeddings = UpstageEmbeddingsAdapter(
             self.client,

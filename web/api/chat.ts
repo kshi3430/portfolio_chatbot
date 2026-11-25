@@ -1,4 +1,7 @@
 import OpenAI from "openai";
+import { Client as LangSmithClient } from "langsmith";
+import { wrapOpenAI } from "langsmith/wrappers/openai";
+import { traceable } from "langsmith/traceable";
 import portfolioData from "../data/projects.json" with { type: "json" };
 import personalData from "../data/personal.json" with { type: "json" };
 
@@ -153,17 +156,64 @@ const SECTION_TO_MODAL: Record<string, [string, string]> = {
 let cachedPortfolioDocs: EmbeddedDocument[] | null = null;
 let cachedPersonalDocs: EmbeddedDocument[] | null = null;
 let cachedClient: OpenAI | null = null;
+let cachedLangSmithClient: LangSmithClient | null = null;
+
+function isLangSmithEnabled() {
+  const tracing =
+    process.env.LANGSMITH_TRACING === "true" ||
+    process.env.LANGCHAIN_TRACING_V2 === "true";
+  const hasKey = Boolean(
+    process.env.LANGSMITH_API_KEY || process.env.LANGCHAIN_API_KEY
+  );
+  return tracing && hasKey;
+}
+
+function getLangSmithProject() {
+  return (
+    process.env.LANGSMITH_PROJECT ||
+    process.env.LANGCHAIN_PROJECT ||
+    "portfolio-chatbot"
+  );
+}
+
+function getLangSmithClient() {
+  if (!cachedLangSmithClient) {
+    cachedLangSmithClient = new LangSmithClient({
+      apiKey: process.env.LANGSMITH_API_KEY || process.env.LANGCHAIN_API_KEY,
+      apiUrl:
+        process.env.LANGSMITH_ENDPOINT ||
+        process.env.LANGCHAIN_ENDPOINT ||
+        undefined,
+    });
+  }
+  return cachedLangSmithClient;
+}
+
+async function flushLangSmith() {
+  if (!isLangSmithEnabled()) return;
+  try {
+    await getLangSmithClient().awaitPendingTraceBatches();
+  } catch (err) {
+    console.warn("LangSmith trace flush failed:", err);
+  }
+}
 
 function getClient() {
   if (!process.env.UPSTAGE_API_KEY) {
     throw new Error("UPSTAGE_API_KEY environment variable is required.");
   }
   if (!cachedClient) {
-    cachedClient = new OpenAI({
+    const rawClient = new OpenAI({
       apiKey: process.env.UPSTAGE_API_KEY,
       baseURL: UPSTAGE_BASE_URL,
       timeout: 25_000,
     });
+    cachedClient = isLangSmithEnabled()
+      ? wrapOpenAI(rawClient, {
+          client: getLangSmithClient(),
+          project_name: getLangSmithProject(),
+        })
+      : rawClient;
   }
   return cachedClient;
 }
@@ -1149,7 +1199,7 @@ export default async function handler(req: any, res: any) {
   if (process.env.RAG_API_URL) {
     const ragApiUrl = process.env.RAG_API_URL.replace(/\/$/, "");
     const targetEndpoint = wantsStream ? "/chat/stream" : "/chat";
-    try {
+    const runProxy = async () => {
       const ragResponse = await fetch(`${ragApiUrl}${targetEndpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -1167,31 +1217,59 @@ export default async function handler(req: any, res: any) {
           if (typeof res.flushHeaders === "function") res.flushHeaders();
 
           const reader = ragResponse.body?.getReader();
-          if (!reader) return res.end();
+          if (!reader) return { handled: true, mode: "stream-empty" };
           while (true) {
             const { done, value } = await reader.read();
             if (done) break;
             res.write(Buffer.from(value));
           }
-          return res.end();
+          return { handled: true, mode: "stream" };
         }
 
         const data = await ragResponse.json().catch(() => null);
-        return res.status(200).json({
-          text: data?.answer || "답변을 가져오는 도중 문제가 발생했습니다.",
-          sources: data?.sources || [],
-        });
+        return { handled: true, mode: "json", data };
       }
 
       if (ragResponse.status < 500) {
         const data = await ragResponse.json().catch(() => null);
-        return res
-          .status(ragResponse.status)
-          .json({ error: data?.detail || data?.error || "RAG API request failed" });
+        return {
+          handled: true,
+          mode: "client-error",
+          status: ragResponse.status,
+          error: data?.detail || data?.error || "RAG API request failed",
+        };
       }
       console.warn(`RAG API returned ${ragResponse.status}; falling back to Vercel serverless RAG.`);
+      return { handled: false, status: ragResponse.status };
+    };
+
+    try {
+      const proxyResult = isLangSmithEnabled()
+        ? await traceable(runProxy, {
+            name: "render_rag_proxy",
+            run_type: "chain",
+            client: getLangSmithClient(),
+            project_name: getLangSmithProject(),
+            metadata: { endpoint: targetEndpoint, stream: wantsStream },
+          })()
+        : await runProxy();
+
+      if (proxyResult.handled) {
+        await flushLangSmith();
+        if (proxyResult.mode === "stream" || proxyResult.mode === "stream-empty") {
+          return res.end();
+        }
+        if (proxyResult.mode === "json") {
+          return res.status(200).json({
+            text: proxyResult.data?.answer || "답변을 가져오는 도중 문제가 발생했습니다.",
+            sources: proxyResult.data?.sources || [],
+          });
+        }
+        return res.status(proxyResult.status || 400).json({ error: proxyResult.error });
+      }
     } catch (error: any) {
       console.warn("Vercel RAG API Proxy fallback triggered:", error?.message || error);
+      await flushLangSmith();
     }
   }
 
@@ -1238,7 +1316,19 @@ export default async function handler(req: any, res: any) {
         },
       ];
     } else {
-      const docs = await retrieve(client, message, intent, targetProject, uiTarget);
+      const docs = isLangSmithEnabled()
+        ? await traceable(
+            async (_query: string) =>
+              retrieve(client, message, intent, targetProject, uiTarget),
+            {
+              name: "vercel_rag_retrieve",
+              run_type: "retriever",
+              client: getLangSmithClient(),
+              project_name: getLangSmithProject(),
+              metadata: { intent, targetProject, uiTarget },
+            }
+          )(message)
+        : await retrieve(client, message, intent, targetProject, uiTarget);
       navigation = resolveNavigation(intent, targetProject, uiTarget, docs, message);
       sources = docs.map((d) => ({
         title: d.title,
@@ -1309,6 +1399,7 @@ ${context}
         target_project: targetProject,
         navigation,
       });
+      await flushLangSmith();
       return res.end();
     }
 
@@ -1319,6 +1410,7 @@ ${context}
       max_tokens: maxTokens,
     });
     const answer = response.choices?.[0]?.message?.content?.trim() || "";
+    await flushLangSmith();
     return res.status(200).json({
       text: answer || "답변을 가져오는 도중 문제가 발생했습니다.",
       sources,
@@ -1326,6 +1418,7 @@ ${context}
     });
   } catch (error: any) {
     console.error("Vercel RAG API Error:", error);
+    await flushLangSmith();
     return res.status(500).json({
       error: error?.message || "RAG 답변 생성 중 오류가 발생했습니다.",
     });
